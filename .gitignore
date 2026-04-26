@@ -1,4 +1,6 @@
-# Unity generated folders
+# ============================================================
+# Unity Generated Folders
+# ============================================================
 [Ll]ibrary/
 [Tt]emp/
 [Oo]bj/
@@ -6,15 +8,22 @@
 [Bb]uilds/
 [Ll]ogs/
 [Uu]ser[Ss]ettings/
-
-# Memory captures
 [Mm]emoryCaptures/
+[Rr]ecycleBin/
+[Bb]ackups/
+il2cpp_cache/
+ExportedObj/
 
-# Visual Studio / Rider / IDE files
+# ============================================================
+# Visual Studio / Rider / VS Code / IDE Files
+# ============================================================
 .vs/
+.vscode/
 .idea/
 *.csproj
 *.sln
+*.slnx
+*.suo
 *.user
 *.userprefs
 *.pidb
@@ -24,16 +33,38 @@
 *.mdb
 *.opendb
 *.VC.db
+_ReSharper*/
+*.resharper
 
-# OS files
+# ============================================================
+# OS Files
+# ============================================================
 .DS_Store
 Thumbs.db
 Desktop.ini
+ehthumbs.db
 
-# Crash reports
-sysinfo.txt
-
-# Unity auto-generated
+# ============================================================
+# Unity Auto-Generated / Build Output
+# ============================================================
 *.apk
 *.aab
 *.unitypackage
+*.app
+*.exe
+*.x86
+*.x86_64
+*.bc
+crashlytics-build.properties
+
+# ============================================================
+# Crash & Debug Reports
+# ============================================================
+sysinfo.txt
+*.stackdump
+
+# ============================================================
+# Nuget / Package Cache
+# ============================================================
+nuget/
+.nuget/
