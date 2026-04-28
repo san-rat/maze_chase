@@ -12,11 +12,11 @@ TagManager:
   - MinimapIcon
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Ground_Walkable
+  - Maze_Wall
+  - Door_Obstacle
+  - Graph_Node
+  - Character
   - 
   - 
   - 
