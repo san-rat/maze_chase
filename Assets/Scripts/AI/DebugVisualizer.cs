@@ -5,7 +5,7 @@ namespace MazeChase.AI
 {
     public class DebugVisualizer : MonoBehaviour
     {
-        [Header("Toggle — press Tab in Play mode")]
+        [Header("Press Tab to toggle")]
         public bool debugMode = false;
 
         [Header("Colors")]
@@ -37,11 +37,12 @@ namespace MazeChase.AI
             adjacency = adj;
         }
 
+        // OnDrawGizmos draws ALWAYS regardless of selection
         void OnDrawGizmos()
         {
             if (!debugMode) return;
 
-            // Draw all nodes and edges
+            // Draw all nodes
             if (allNodes != null)
             {
                 foreach (Vector3 node in allNodes)
@@ -59,16 +60,27 @@ namespace MazeChase.AI
             }
 
             // Draw visited nodes
-            Gizmos.color = visitedColor;
             if (visitedNodes != null)
+            {
+                Gizmos.color = visitedColor;
                 foreach (Vector3 v in visitedNodes)
-                    Gizmos.DrawSphere(v, 0.25f);
+                    Gizmos.DrawSphere(v, 0.3f);
+            }
 
             // Draw final path
-            Gizmos.color = pathColor;
-            if (finalPath != null)
+            if (finalPath != null && finalPath.Count > 1)
+            {
+                Gizmos.color = pathColor;
                 for (int i = 0; i < finalPath.Count - 1; i++)
                     Gizmos.DrawLine(finalPath[i], finalPath[i + 1]);
+
+                // Draw bigger spheres on path nodes
+                foreach (Vector3 p in finalPath)
+                {
+                    Gizmos.color = pathColor;
+                    Gizmos.DrawSphere(p, 0.35f);
+                }
+            }
         }
     }
 }
