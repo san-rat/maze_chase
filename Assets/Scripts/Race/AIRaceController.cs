@@ -19,7 +19,7 @@ namespace MazeChase.Race
         [SerializeField] private float speedMultiplier = 1.15f;
 
         [Header("Algorithm Selection")]
-        [SerializeField] private bool useUCS = true; // false = NavMesh fallback
+        [SerializeField] private bool useUCS = true;
 
         private NavMeshAgent agent;
         private RaceGameManager raceGameManager;
@@ -29,7 +29,6 @@ namespace MazeChase.Race
         private int waypointIndex = 0;
         private bool isMoving = false;
 
-        // Built from GraphNodes in scene
         private List<Vector3> graphNodes = new();
         private Dictionary<Vector3, List<(Vector3, float)>> adjacency = new();
 
@@ -48,7 +47,6 @@ namespace MazeChase.Race
 
         private void Start()
         {
-            // Snap to NavMesh
             if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit,
                 navMeshSampleRadius, NavMesh.AllAreas))
             {
@@ -57,10 +55,7 @@ namespace MazeChase.Race
 
             agent.speed = agent.speed * speedMultiplier;
 
-            // Read graph nodes from scene
             BuildGraphFromScene();
-
-            // Start after delay
             StartCoroutine(DelayedStart());
         }
 
@@ -75,11 +70,9 @@ namespace MazeChase.Race
 
             if (!isMoving) return;
 
-            // Drive animation
             if (animator != null)
                 animator.SetFloat("Speed", agent.velocity.magnitude);
 
-            // Follow UCS waypoints
             if (searchResult != null && searchResult.pathFound)
             {
                 if (!agent.pathPending &&
@@ -94,24 +87,48 @@ namespace MazeChase.Race
             }
         }
 
-        // ─── Graph Builder ────────────────────────────────────────────────
         private void BuildGraphFromScene()
         {
             graphNodes.Clear();
             adjacency.Clear();
 
-            // Collect all node positions from GraphNodes parent
-            GameObject graphRoot = GameObject.Find("GraphNodes");
-            if (graphRoot == null)
+            float stepSize = 3f;
+            float range = 70f;
+            float[] yHeights = new float[] { 0f, 0.5f, 1f, -0.5f, 2f, -1f };
+
+            for (float x = -range; x <= range; x += stepSize)
             {
-                Debug.LogWarning("AIRaceController: GraphNodes object not found in scene.");
-                return;
+                for (float z = -range; z <= range; z += stepSize)
+                {
+                    foreach (float y in yHeights)
+                    {
+                        Vector3 samplePos = new Vector3(
+                            transform.position.x + x,
+                            transform.position.y + y,
+                            transform.position.z + z);
+
+                        if (NavMesh.SamplePosition(samplePos, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+                        {
+                            bool tooClose = false;
+                            foreach (Vector3 existing in graphNodes)
+                            {
+                                if (Vector3.Distance(hit.position, existing) < stepSize * 0.8f)
+                                {
+                                    tooClose = true;
+                                    break;
+                                }
+                            }
+                            if (!tooClose)
+                            {
+                                graphNodes.Add(hit.position);
+                                break;
+                            }
+                        }
+                    }
+                }
             }
 
-            foreach (Transform child in graphRoot.transform)
-                graphNodes.Add(child.position);
-
-            // Build adjacency: connect nodes within 15 units of each other
+            // Build adjacency
             foreach (Vector3 node in graphNodes)
             {
                 adjacency[node] = new List<(Vector3, float)>();
@@ -119,15 +136,15 @@ namespace MazeChase.Race
                 {
                     if (node == other) continue;
                     float dist = Vector3.Distance(node, other);
-                    if (dist < 15f)
+                    if (dist < 6f)
                         adjacency[node].Add((other, dist));
                 }
             }
 
-            Debug.Log($"AIRaceController: Graph built — {graphNodes.Count} nodes.");
+            Debug.Log($"AIRaceController: NavMesh graph built — {graphNodes.Count} nodes.");
+            Debug.Log($"AIRaceController: Sampling centred at {transform.position}");
         }
 
-        // ─── Delayed Start ────────────────────────────────────────────────
         private IEnumerator DelayedStart()
         {
             SetAnim(false);
@@ -136,7 +153,6 @@ namespace MazeChase.Race
 
             if (useUCS && graphNodes.Count > 0 && goal != null)
             {
-                // Run UCS
                 UCSSearch ucs = new UCSSearch();
                 searchResult = ucs.FindPath(
                     transform.position,
@@ -152,7 +168,6 @@ namespace MazeChase.Race
                               $"cost {searchResult.totalCost:F1}, " +
                               $"{searchResult.expandedNodeCount} nodes expanded.");
 
-                    // Pass results to debug visualizer if present
                     DebugVisualizer vis = FindAnyObjectByType<DebugVisualizer>();
                     if (vis != null)
                         vis.SetResults(searchResult, graphNodes, adjacency);
@@ -167,7 +182,6 @@ namespace MazeChase.Race
                 Debug.LogWarning("AIRaceController: UCS found no path — using NavMesh fallback.");
             }
 
-            // NavMesh fallback
             if (goal != null)
             {
                 agent.isStopped = false;
@@ -177,7 +191,6 @@ namespace MazeChase.Race
             }
         }
 
-        // ─── Movement ─────────────────────────────────────────────────────
         private void MoveToWaypoint()
         {
             if (waypointIndex >= searchResult.path.Count) return;
