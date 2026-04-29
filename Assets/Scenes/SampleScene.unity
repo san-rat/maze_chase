@@ -23965,6 +23965,7 @@ PrefabInstance:
     - {fileID: 5885216827943657505, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
     - {fileID: 135756642000475821, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
     - {fileID: 4416926081852918493, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
+    - {fileID: 4416926081852918491, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 3893294197879345259, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
@@ -25214,8 +25215,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3d0f858cc10b1348a60c7cdbdcb8b9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MazeChase.AI.RaceCameraSwitcher
-  playerCamera: {fileID: 0}
-  aiCamera: {fileID: 0}
 --- !u!4 &2023432900
 Transform:
   m_ObjectHideFlags: 0

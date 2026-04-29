@@ -38,15 +38,21 @@ namespace MazeChase.Race
             animator = GetComponentInChildren<Animator>();
             raceGameManager = FindAnyObjectByType<RaceGameManager>();
 
+            if (animator == null)
+                Debug.LogWarning("AIRaceController: No Animator found!");
+            else
+                Debug.Log("AIRaceController: Animator found — " + animator.gameObject.name);
+
             if (goal == null)
             {
-                GameObject g = GameObject.Find("GoalCheckpoint");
+                GameObject g = GameObject.Find("TestDestination_Exit");
                 goal = g != null ? g.transform : null;
             }
         }
 
         private void Start()
         {
+            // Snap to NavMesh
             if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit,
                 navMeshSampleRadius, NavMesh.AllAreas))
             {
@@ -54,6 +60,10 @@ namespace MazeChase.Race
             }
 
             agent.speed = agent.speed * speedMultiplier;
+
+            // Freeze all rotation — NavMeshAgent handles movement
+            agent.updateRotation = true;
+            agent.updateUpAxis = false;
 
             BuildGraphFromScene();
             StartCoroutine(DelayedStart());
@@ -70,9 +80,18 @@ namespace MazeChase.Race
 
             if (!isMoving) return;
 
+            // Drive animation from velocity
             if (animator != null)
-                animator.SetFloat("Speed", agent.velocity.magnitude);
+            {
+                float speed = agent.velocity.magnitude;
+                animator.SetFloat("Speed", speed, 0.15f, Time.deltaTime);
+                animator.SetFloat("MotionSpeed", 1f);
+                animator.SetBool("Grounded", true);
+                animator.SetBool("FreeFall", false);
+                animator.SetBool("Jump", false);
+            }
 
+            // Follow waypoints
             if (searchResult != null && searchResult.pathFound)
             {
                 if (!agent.pathPending &&
@@ -128,7 +147,6 @@ namespace MazeChase.Race
                 }
             }
 
-            // Build adjacency
             foreach (Vector3 node in graphNodes)
             {
                 adjacency[node] = new List<(Vector3, float)>();
@@ -142,13 +160,21 @@ namespace MazeChase.Race
             }
 
             Debug.Log($"AIRaceController: NavMesh graph built — {graphNodes.Count} nodes.");
-            Debug.Log($"AIRaceController: Sampling centred at {transform.position}");
         }
 
         private IEnumerator DelayedStart()
         {
-            SetAnim(false);
-            Debug.Log($"AIRaceController: AI waiting {aiDelay}s before starting...");
+            // Idle animation during delay
+            if (animator != null)
+            {
+                animator.SetFloat("Speed", 0f);
+                animator.SetFloat("MotionSpeed", 1f);
+                animator.SetBool("Grounded", true);
+                animator.SetBool("FreeFall", false);
+                animator.SetBool("Jump", false);
+            }
+
+            Debug.Log($"AIRaceController: AI waiting {aiDelay}s...");
             yield return new WaitForSeconds(aiDelay);
 
             if (useUCS && graphNodes.Count > 0 && goal != null)
@@ -174,12 +200,11 @@ namespace MazeChase.Race
 
                     waypointIndex = 0;
                     isMoving = true;
-                    SetAnim(true);
                     MoveToWaypoint();
                     yield break;
                 }
 
-                Debug.LogWarning("AIRaceController: UCS found no path — using NavMesh fallback.");
+                Debug.LogWarning("AIRaceController: UCS no path — NavMesh fallback.");
             }
 
             if (goal != null)
@@ -187,7 +212,6 @@ namespace MazeChase.Race
                 agent.isStopped = false;
                 agent.SetDestination(goal.position);
                 isMoving = true;
-                SetAnim(true);
             }
         }
 
@@ -204,7 +228,6 @@ namespace MazeChase.Race
             agent.isStopped = true;
             SetAnim(false);
             Debug.Log("AIRaceController: AI reached the goal!");
-
             RaceParticipant rp = GetComponent<RaceParticipant>();
             if (rp != null) raceGameManager?.RegisterFinish(rp);
         }
@@ -212,7 +235,13 @@ namespace MazeChase.Race
         private void SetAnim(bool moving)
         {
             if (animator != null)
-                animator.SetFloat("Speed", moving ? 1f : 0f);
+            {
+                animator.SetFloat("Speed", moving ? 2f : 0f);
+                animator.SetFloat("MotionSpeed", 1f);
+                animator.SetBool("Grounded", true);
+                animator.SetBool("FreeFall", false);
+                animator.SetBool("Jump", false);
+            }
         }
     }
 }
