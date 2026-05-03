@@ -52,7 +52,6 @@ namespace MazeChase.Race
 
         private void Start()
         {
-            // Snap to NavMesh
             if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit,
                 navMeshSampleRadius, NavMesh.AllAreas))
             {
@@ -60,8 +59,6 @@ namespace MazeChase.Race
             }
 
             agent.speed = agent.speed * speedMultiplier;
-
-            // Freeze all rotation — NavMeshAgent handles movement
             agent.updateRotation = true;
             agent.updateUpAxis = false;
 
@@ -80,7 +77,6 @@ namespace MazeChase.Race
 
             if (!isMoving) return;
 
-            // Drive animation from velocity
             if (animator != null)
             {
                 float speed = agent.velocity.magnitude;
@@ -91,7 +87,6 @@ namespace MazeChase.Race
                 animator.SetBool("Jump", false);
             }
 
-            // Follow waypoints
             if (searchResult != null && searchResult.pathFound)
             {
                 if (!agent.pathPending &&
@@ -111,8 +106,10 @@ namespace MazeChase.Race
             graphNodes.Clear();
             adjacency.Clear();
 
-            float stepSize = 3f;
-            float range = 70f;
+            // Use maze centre instead of AI position for full coverage
+            Vector3 mazeCenter = new Vector3(-41f, -1.66f, -907f);
+            float stepSize = 2.5f;
+            float range = 150f;
             float[] yHeights = new float[] { 0f, 0.5f, 1f, -0.5f, 2f, -1f };
 
             for (float x = -range; x <= range; x += stepSize)
@@ -122,9 +119,9 @@ namespace MazeChase.Race
                     foreach (float y in yHeights)
                     {
                         Vector3 samplePos = new Vector3(
-                            transform.position.x + x,
-                            transform.position.y + y,
-                            transform.position.z + z);
+                            mazeCenter.x + x,
+                            mazeCenter.y + y,
+                            mazeCenter.z + z);
 
                         if (NavMesh.SamplePosition(samplePos, out NavMeshHit hit, 2f, NavMesh.AllAreas))
                         {
@@ -160,11 +157,11 @@ namespace MazeChase.Race
             }
 
             Debug.Log($"AIRaceController: NavMesh graph built — {graphNodes.Count} nodes.");
+            Debug.Log($"AIRaceController: Maze centre used — {mazeCenter}");
         }
 
         private IEnumerator DelayedStart()
         {
-            // Idle animation during delay
             if (animator != null)
             {
                 animator.SetFloat("Speed", 0f);
