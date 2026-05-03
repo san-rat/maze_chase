@@ -235,12 +235,10 @@ Press **Tab** during gameplay to see the algorithm working in real time:
 ### Graphics and Visualization (SE3032)
 - ✅ Source code
 - ⬜ 3-minute demo video
-- **Deadline: 3rd May 2026**
 
 ### Intelligent Systems (SE3062)
 - ✅ Git commit history per member
 - ⬜ Final showcase and viva
-- **Deadline: TBC**
 
 ---
 
