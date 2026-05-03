@@ -12,7 +12,7 @@ namespace MazeChase.Race
     {
         [Header("Race Setup")]
         [SerializeField] private Transform goal;
-        [SerializeField] private float navMeshSampleRadius = 3.0f;
+        [SerializeField] private float navMeshSampleRadius = 5.0f;
 
         [Header("AI Behaviour")]
         [SerializeField] private float aiDelay = 5f;
@@ -52,10 +52,16 @@ namespace MazeChase.Race
 
         private void Start()
         {
+            // Snap AI exactly to NavMesh surface
             if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit,
                 navMeshSampleRadius, NavMesh.AllAreas))
             {
                 agent.Warp(hit.position);
+
+                // Force Y to NavMesh surface to fix floating
+                Vector3 pos = transform.position;
+                pos.y = hit.position.y;
+                transform.position = pos;
             }
 
             agent.speed = agent.speed * speedMultiplier;
@@ -106,7 +112,6 @@ namespace MazeChase.Race
             graphNodes.Clear();
             adjacency.Clear();
 
-            // Use maze centre instead of AI position for full coverage
             Vector3 mazeCenter = new Vector3(-41f, -1.66f, -907f);
             float stepSize = 2.5f;
             float range = 150f;
