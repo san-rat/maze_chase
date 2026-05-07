@@ -162,6 +162,7 @@ namespace StarterAssets
             JumpAndGravity();
             GroundedCheck();
             Move();
+            Crouch();
         }
 
         private void LateUpdate()
@@ -281,6 +282,24 @@ namespace StarterAssets
                 _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
             }
         }
+
+        private void Crouch()
+        {
+            if (_input.crouch)
+            {
+                // Reduce character height to half
+                _controller.height = 0.9f;
+                _controller.center = new Vector3(0, 0.45f, 0);
+            }
+            else
+            {
+                // Restore normal height
+                _controller.height = 1.8f;
+                _controller.center = new Vector3(0, 0.9f, 0);
+            }
+        }
+
+
 
         private void JumpAndGravity()
         {
