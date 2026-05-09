@@ -17,6 +17,10 @@ namespace MazeChase.AI
         public float aiDelay = 5f;
         public float aiSpeedMultiplier = 1.15f;
 
+        [Header("Algorithm Selection")]
+        // 0 = UCS, 1 = BFS, 2 = A*
+        public int currentAlgorithmIndex = 0; 
+
         [Header("Graph (assigned by Member 1's GraphBuilder)")]
         public List<Vector3> graphNodes = new List<Vector3>();
         public Dictionary<Vector3, List<(Vector3, float)>> adjacency;
@@ -39,60 +43,149 @@ namespace MazeChase.AI
             StartCoroutine(DelayedStart());
         }
 
-        IEnumerator DelayedStart()
+        // Method called by UI to change algorithm at runtime
+        public void SetAlgorithm(int index)
+{
+    currentAlgorithmIndex = index;
+    Debug.Log($"AI: Algorithm {index} selected. Starting movement!");
+
+    // Start pathfinding immediately, regardless of whether she is already moving
+    StartCoroutine(RecalculatePath());
+}
+
+        // The "Brain" that decides which algorithm to run
+        private SearchResult PerformSearch()
         {
-            SetAnim(false);
-            yield return new WaitForSeconds(aiDelay);
-
-            // Run UCS
-            if (graphNodes != null && graphNodes.Count > 0 && goalTransform != null)
+            var adjMap = adjacency ?? BuildFallbackAdjacency();
+            
+            switch (currentAlgorithmIndex)
             {
-                UCSSearch ucs = new UCSSearch();
-                currentResult = ucs.FindPath(
-                    transform.position,
-                    goalTransform.position,
-                    graphNodes,
-                    adjacency ?? BuildFallbackAdjacency()
-                );
+                case 1: // BFS
+                    BFSSearch bfs = new BFSSearch();
+                    return bfs.FindPath(transform.position, goalTransform.position, graphNodes, adjMap);
+                
+                case 2: // A*
+                    AStarSearch astar = new AStarSearch();
+                    return astar.FindPath(transform.position, goalTransform.position, graphNodes, adjMap);
 
-                if (debugVis != null)
-                    debugVis.SetResults(currentResult, graphNodes, adjacency);
+                default: // 0 = UCS
+                    UCSSearch ucs = new UCSSearch();
+                    return ucs.FindPath(transform.position, goalTransform.position, graphNodes, adjMap);
+            }
+        }
 
-                if (currentResult.pathFound)
-                {
-                    isMoving = true;
-                    waypointIndex = 0;
-                    SetAnim(true);
-                    MoveToNext();
-                }
-                else
-                {
-                    // Fallback: use NavMesh directly
-                    Debug.LogWarning("UCS failed — falling back to NavMesh direct path.");
-                    agent.SetDestination(goalTransform.position);
-                    isMoving = true;
-                    SetAnim(true);
-                }
-            }
-            else
-            {
-                // No graph yet — fallback
-                Debug.LogWarning("No graph nodes — using NavMesh fallback.");
-                if (goalTransform != null) agent.SetDestination(goalTransform.position);
-                isMoving = true;
-                SetAnim(true);
-            }
+        // public IEnumerator RecalculatePath()
+        // {
+        //     Debug.Log("AI: Recalculating path...");
+        //     yield return new WaitForSeconds(0.1f);
+
+        //     if (graphNodes == null || graphNodes.Count == 0) yield break;
+
+        //     // USE THE NEW SEARCH HELPER
+        //     currentResult = PerformSearch();
+
+        //     if (debugVis != null)
+        //         debugVis.SetResults(currentResult, graphNodes, adjacency);
+
+        //     if (currentResult.pathFound)
+        //     {
+        //         waypointIndex = 0;
+        //         isMoving = true;
+        //         SetAnim(true);
+        //         MoveToNext();
+        //     }
+        // }
+        public IEnumerator RecalculatePath()
+{
+    Debug.Log("AI: Calculating path...");
+    yield return new WaitForSeconds(0.1f);
+
+    // If there are no graph nodes, walk directly to the goal
+    if (graphNodes == null || graphNodes.Count == 0) 
+    {
+        Debug.LogWarning("No graph nodes found. Walking directly to goal.");
+        FallbackToNavMesh();
+        yield break;
+    }
+
+    currentResult = PerformSearch();
+
+    if (debugVis != null)
+        debugVis.SetResults(currentResult, graphNodes, adjacency);
+
+    if (currentResult != null && currentResult.pathFound)
+    {
+        waypointIndex = 0;
+        isMoving = true;
+        SetAnim(true);
+        MoveToNext();
+    }
+    else
+    {
+        Debug.LogWarning("Algorithm failed to find path. Using fallback.");
+        FallbackToNavMesh();
+    }
+}
+
+        // IEnumerator DelayedStart()
+        // {
+        //     SetAnim(false);
+        //     yield return new WaitForSeconds(aiDelay);
+
+        //     if (graphNodes != null && graphNodes.Count > 0 && goalTransform != null)
+        //     {
+        //         // Now uses the selected algorithm instead of hardcoded UCS
+        //         currentResult = PerformSearch();
+
+        //         if (debugVis != null)
+        //             debugVis.SetResults(currentResult, graphNodes, adjacency);
+
+        //         if (currentResult.pathFound)
+        //         {
+        //             isMoving = true;
+        //             waypointIndex = 0;
+        //             SetAnim(true);
+        //             MoveToNext();
+        //         }
+        //         else
+        //         {
+        //             FallbackToNavMesh();
+        //         }
+        //     }
+        //     else
+        //     {
+        //         Debug.LogWarning("No graph nodes — using NavMesh fallback.");
+        //         FallbackToNavMesh();
+        //     }
+        // }
+
+        IEnumerator DelayedStart()
+{
+    // 1. Tell the animator we are standing still
+    SetAnim(false);
+
+    // 2. Wait for the start-line delay
+    yield return new WaitForSeconds(aiDelay);
+
+    // 3. Just log a message. DO NOT start moving here!
+    Debug.Log("AI is ready! Please select an algorithm (1, 2, or 3) to start.");
+}
+
+        private void FallbackToNavMesh()
+        {
+            if (goalTransform == null) return;
+            agent.SetDestination(goalTransform.position);
+            isMoving = true;
+            SetAnim(true);
         }
 
         void Update()
         {
             if (!isMoving) return;
 
-            // Animate from velocity
             if (animator != null)
                 animator.SetFloat("Speed", agent.velocity.magnitude);
 
-            // Waypoint following
             if (currentResult != null && currentResult.pathFound)
             {
                 if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.2f)
@@ -132,7 +225,6 @@ namespace MazeChase.AI
                 animator.SetFloat("Speed", moving ? 1f : 0f);
         }
 
-        // Fallback: connect every node to its nearest neighbors by distance
         Dictionary<Vector3, List<(Vector3, float)>> BuildFallbackAdjacency()
         {
             var adj = new Dictionary<Vector3, List<(Vector3, float)>>();
@@ -148,5 +240,200 @@ namespace MazeChase.AI
             }
             return adj;
         }
+
+        // --- FOOTSTEP RECEIVERS TO KEEP CONSOLE CLEAN ---
+        public void OnFootstep(AnimationEvent animationEvent) { }
+        public void OnLand(AnimationEvent animationEvent) { }
     }
 }
+
+
+// using System.Collections;
+// using System.Collections.Generic;
+// using UnityEngine;
+// using UnityEngine.AI;
+// using MazeChase.Race;
+
+// namespace MazeChase.AI
+// {
+//     [RequireComponent(typeof(NavMeshAgent))]
+//     public class AIAgentController : MonoBehaviour
+//     {
+//         [Header("References")]
+//         public Transform goalTransform;
+//         public Animator animator;
+
+//         [Header("Settings")]
+//         public float aiDelay = 5f;
+//         public float aiSpeedMultiplier = 1.15f;
+
+//         [Header("Graph (assigned by Member 1's GraphBuilder)")]
+//         public List<Vector3> graphNodes = new List<Vector3>();
+//         public Dictionary<Vector3, List<(Vector3, float)>> adjacency;
+
+//         private NavMeshAgent agent;
+//         private SearchResult currentResult;
+//         private int waypointIndex = 0;
+//         private bool isMoving = false;
+//         private DebugVisualizer debugVis;
+
+//         void Awake()
+//         {
+//             agent = GetComponent<NavMeshAgent>();
+//             debugVis = FindAnyObjectByType<DebugVisualizer>();
+//         }
+
+//         void Start()
+//         {
+//             agent.speed = agent.speed * aiSpeedMultiplier;
+//             StartCoroutine(DelayedStart());
+//         }
+//         // Paste this inside your AIAgentController class
+// public void SetAlgorithm(int index)
+// {
+//     currentAlgorithmIndex = index;
+//     Debug.Log($"Algorithm changed to: {index}");
+
+//     // If the AI is already moving, make it recalculate using the new math
+//     if (isMoving) 
+//     {
+//         StartCoroutine(RecalculatePath());
+//     }
+// }
+// // This is the function that was missing!
+//     public IEnumerator RecalculatePath()
+//     {
+//         Debug.Log("AI: Recalculating path...");
+        
+//         // Wait a tiny bit to make sure everything is ready
+//         yield return new WaitForSeconds(0.1f);
+
+//         if (graphNodes == null || graphNodes.Count == 0) yield break;
+
+//         // Re-run the currently selected algorithm
+//         currentResult = PerformSearch();
+
+//         if (debugVis != null)
+//             debugVis.SetResults(currentResult, graphNodes, adjacency);
+
+//         if (currentResult.pathFound)
+//         {
+//             waypointIndex = 0;
+//             isMoving = true;
+//             SetAnim(true);
+//             MoveToNext();
+//             Debug.Log($"AI: New path found using algorithm index {currentAlgorithmIndex}!");
+//         }
+//     }
+
+//         IEnumerator DelayedStart()
+//         {
+//             SetAnim(false);
+//             yield return new WaitForSeconds(aiDelay);
+
+//             // Run UCS
+//             if (graphNodes != null && graphNodes.Count > 0 && goalTransform != null)
+//             {
+//                 UCSSearch ucs = new UCSSearch();
+//                 currentResult = ucs.FindPath(
+//                     transform.position,
+//                     goalTransform.position,
+//                     graphNodes,
+//                     adjacency ?? BuildFallbackAdjacency()
+//                 );
+
+//                 if (debugVis != null)
+//                     debugVis.SetResults(currentResult, graphNodes, adjacency);
+
+//                 if (currentResult.pathFound)
+//                 {
+//                     isMoving = true;
+//                     waypointIndex = 0;
+//                     SetAnim(true);
+//                     MoveToNext();
+//                 }
+//                 else
+//                 {
+//                     // Fallback: use NavMesh directly
+//                     Debug.LogWarning("UCS failed — falling back to NavMesh direct path.");
+//                     agent.SetDestination(goalTransform.position);
+//                     isMoving = true;
+//                     SetAnim(true);
+//                 }
+//             }
+//             else
+//             {
+//                 // No graph yet — fallback
+//                 Debug.LogWarning("No graph nodes — using NavMesh fallback.");
+//                 if (goalTransform != null) agent.SetDestination(goalTransform.position);
+//                 isMoving = true;
+//                 SetAnim(true);
+//             }
+//         }
+
+//         void Update()
+//         {
+//             if (!isMoving) return;
+
+//             // Animate from velocity
+//             if (animator != null)
+//                 animator.SetFloat("Speed", agent.velocity.magnitude);
+
+//             // Waypoint following
+//             if (currentResult != null && currentResult.pathFound)
+//             {
+//                 if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.2f)
+//                 {
+//                     waypointIndex++;
+//                     if (waypointIndex < currentResult.path.Count)
+//                         MoveToNext();
+//                     else
+//                         OnReachGoal();
+//                 }
+//             }
+//         }
+
+//         void MoveToNext()
+//         {
+//             if (waypointIndex >= currentResult.path.Count) return;
+//             agent.SetDestination(currentResult.path[waypointIndex]);
+//         }
+
+//         void OnReachGoal()
+//         {
+//             isMoving = false;
+//             SetAnim(false);
+//             Debug.Log("AI reached the goal!");
+
+//             RaceGameManager gm = FindAnyObjectByType<RaceGameManager>();
+//             if (gm != null)
+//             {
+//                 RaceParticipant rp = GetComponent<RaceParticipant>();
+//                 if (rp != null) gm.RegisterFinish(rp);
+//             }
+//         }
+
+//         void SetAnim(bool moving)
+//         {
+//             if (animator != null)
+//                 animator.SetFloat("Speed", moving ? 1f : 0f);
+//         }
+
+//         // Fallback: connect every node to its nearest neighbors by distance
+//         Dictionary<Vector3, List<(Vector3, float)>> BuildFallbackAdjacency()
+//         {
+//             var adj = new Dictionary<Vector3, List<(Vector3, float)>>();
+//             foreach (Vector3 node in graphNodes)
+//             {
+//                 adj[node] = new List<(Vector3, float)>();
+//                 foreach (Vector3 other in graphNodes)
+//                 {
+//                     if (node == other) continue;
+//                     float d = Vector3.Distance(node, other);
+//                     if (d < 5f) adj[node].Add((other, d));
+//                 }
+//             }
+//             return adj;
+//         }
+//     }
+// }
