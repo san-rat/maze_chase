@@ -3955,6 +3955,7 @@ GameObject:
   - component: {fileID: 303553319}
   - component: {fileID: 303553318}
   - component: {fileID: 303553322}
+  - component: {fileID: 303553323}
   m_Layer: 0
   m_Name: HalfWall_03
   m_TagString: Untagged
@@ -4098,6 +4099,20 @@ MonoBehaviour:
   riseSpeed: 3
   activationDistance: 3
   isRaised: 0
+--- !u!114 &303553323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 303553316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0965328a6d48b33419fcce58d8bab61d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GraphEdgeBlocker
+  nodeA: {fileID: 870912655}
+  nodeB: {fileID: 1788737600}
 --- !u!1 &305731823
 GameObject:
   m_ObjectHideFlags: 0
@@ -6666,6 +6681,7 @@ GameObject:
   - component: {fileID: 474405518}
   - component: {fileID: 474405517}
   - component: {fileID: 474405521}
+  - component: {fileID: 474405522}
   m_Layer: 0
   m_Name: OverheadWall_01
   m_TagString: Untagged
@@ -6809,6 +6825,20 @@ MonoBehaviour:
   riseSpeed: 3
   activationDistance: 3
   isRaised: 0
+--- !u!114 &474405522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 474405515}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0965328a6d48b33419fcce58d8bab61d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GraphEdgeBlocker
+  nodeA: {fileID: 1926205775}
+  nodeB: {fileID: 870912655}
 --- !u!1 &477423945
 GameObject:
   m_ObjectHideFlags: 0
@@ -12288,6 +12318,7 @@ GameObject:
   - component: {fileID: 860837667}
   - component: {fileID: 860837666}
   - component: {fileID: 860837670}
+  - component: {fileID: 860837671}
   m_Layer: 0
   m_Name: HalfWall_02
   m_TagString: Untagged
@@ -12431,6 +12462,20 @@ MonoBehaviour:
   riseSpeed: 3
   activationDistance: 3
   isRaised: 0
+--- !u!114 &860837671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 860837664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0965328a6d48b33419fcce58d8bab61d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GraphEdgeBlocker
+  nodeA: {fileID: 906802314}
+  nodeB: {fileID: 472565500}
 --- !u!1 &866909228
 GameObject:
   m_ObjectHideFlags: 0
@@ -18970,6 +19015,7 @@ GameObject:
   - component: {fileID: 1380679241}
   - component: {fileID: 1380679245}
   - component: {fileID: 1380679246}
+  - component: {fileID: 1380679247}
   m_Layer: 0
   m_Name: 'HalfWall_01 '
   m_TagString: Untagged
@@ -19113,6 +19159,20 @@ MonoBehaviour:
   riseSpeed: 3
   activationDistance: 3
   isRaised: 0
+--- !u!114 &1380679247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1380679240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0965328a6d48b33419fcce58d8bab61d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GraphEdgeBlocker
+  nodeA: {fileID: 106702154}
+  nodeB: {fileID: 1970423501}
 --- !u!1 &1387974336
 GameObject:
   m_ObjectHideFlags: 0
