@@ -19,7 +19,7 @@ namespace MazeChase.AI
 
         [Header("Algorithm Selection")]
         // 0 = UCS, 1 = BFS, 2 = A*
-        public int currentAlgorithmIndex = 0; 
+        public int currentAlgorithmIndex = 0;
 
         [Header("Graph (assigned by Member 1's GraphBuilder)")]
         public List<Vector3> graphNodes = new List<Vector3>();
@@ -39,89 +39,80 @@ namespace MazeChase.AI
 
         void Start()
         {
-            agent.speed = agent.speed * aiSpeedMultiplier;
+            agent.speed *= aiSpeedMultiplier;
             StartCoroutine(DelayedStart());
         }
 
-        // Method called by UI to change algorithm at runtime
+        // UI: Change algorithm at runtime
         public void SetAlgorithm(int index)
-{
-    currentAlgorithmIndex = index;
-    Debug.Log($"AI: Algorithm {index} selected. Starting movement!");
+        {
+            currentAlgorithmIndex = index;
+            Debug.Log($"AI: Algorithm {index} selected. Recalculating path...");
+            StartCoroutine(RecalculatePath());
+        }
 
-    // Start pathfinding immediately, regardless of whether she is already moving
-    StartCoroutine(RecalculatePath());
-}
-
-        // The "Brain" that decides which algorithm to run
+        // Select algorithm
         private SearchResult PerformSearch()
         {
             var adjMap = adjacency ?? BuildFallbackAdjacency();
-            
+
             switch (currentAlgorithmIndex)
             {
-                case 1: // BFS
-                    BFSSearch bfs = new BFSSearch();
-                    return bfs.FindPath(transform.position, goalTransform.position, graphNodes, adjMap);
-                
-                case 2: // A*
-                    AStarSearch astar = new AStarSearch();
-                    return astar.FindPath(transform.position, goalTransform.position, graphNodes, adjMap);
+                case 1:
+                    return new BFSSearch().FindPath(transform.position, goalTransform.position, graphNodes, adjMap);
 
-                default: // 0 = UCS
-                    UCSSearch ucs = new UCSSearch();
-                    return ucs.FindPath(transform.position, goalTransform.position, graphNodes, adjMap);
+                case 2:
+                    return new AStarSearch().FindPath(transform.position, goalTransform.position, graphNodes, adjMap);
+
+                default:
+                    return new UCSSearch().FindPath(transform.position, goalTransform.position, graphNodes, adjMap);
             }
         }
 
         public IEnumerator RecalculatePath()
-{
-    Debug.Log("AI: Calculating path...");
-    yield return new WaitForSeconds(0.1f);
+        {
+            Debug.Log("AI: Calculating path...");
+            yield return new WaitForSeconds(0.1f);
 
-    // If there are no graph nodes, walk directly to the goal
-    if (graphNodes == null || graphNodes.Count == 0) 
-    {
-        Debug.LogWarning("No graph nodes found. Walking directly to goal.");
-        FallbackToNavMesh();
-        yield break;
-    }
+            if (graphNodes == null || graphNodes.Count == 0)
+            {
+                Debug.LogWarning("No graph nodes found. Using fallback NavMesh.");
+                FallbackToNavMesh();
+                yield break;
+            }
 
-    currentResult = PerformSearch();
+            var adjMap = adjacency ?? BuildFallbackAdjacency();
 
-    if (debugVis != null)
-        debugVis.SetResults(currentResult, graphNodes, adjacency);
+            currentResult = PerformSearch();
 
-    if (currentResult != null && currentResult.pathFound)
-    {
-        waypointIndex = 0;
-        isMoving = true;
-        SetAnim(true);
-        MoveToNext();
-    }
-    else
-    {
-        Debug.LogWarning("Algorithm failed to find path. Using fallback.");
-        FallbackToNavMesh();
-    }
-}
+            if (debugVis != null)
+                debugVis.SetResults(currentResult, graphNodes, adjacency);
 
+            if (currentResult != null && currentResult.pathFound)
+            {
+                waypointIndex = 0;
+                isMoving = true;
+                SetAnim(true);
+                MoveToNext();
+            }
+            else
+            {
+                Debug.LogWarning("AI: Path not found. Using fallback.");
+                FallbackToNavMesh();
+            }
+        }
 
         IEnumerator DelayedStart()
-{
-    // 1. Tell the animator we are standing still
-    SetAnim(false);
-
-    // 2. Wait for the start-line delay
-    yield return new WaitForSeconds(aiDelay);
-
-    // 3. Just log a message. DO NOT start moving here!
-    Debug.Log("AI is ready! Please select an algorithm (1, 2, or 3) to start.");
-}
+        {
+            SetAnim(false);
+            yield return new WaitForSeconds(aiDelay);
+            Debug.Log("AI ready. Select algorithm to start.");
+        }
 
         private void FallbackToNavMesh()
         {
             if (goalTransform == null) return;
+
             agent.SetDestination(goalTransform.position);
             isMoving = true;
             SetAnim(true);
@@ -139,6 +130,7 @@ namespace MazeChase.AI
                 if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.2f)
                 {
                     waypointIndex++;
+
                     if (waypointIndex < currentResult.path.Count)
                         MoveToNext();
                     else
@@ -149,7 +141,7 @@ namespace MazeChase.AI
 
         void MoveToNext()
         {
-            if (waypointIndex >= currentResult.path.Count) return;
+            if (currentResult == null || waypointIndex >= currentResult.path.Count) return;
             agent.SetDestination(currentResult.path[waypointIndex]);
         }
 
@@ -176,22 +168,26 @@ namespace MazeChase.AI
         Dictionary<Vector3, List<(Vector3, float)>> BuildFallbackAdjacency()
         {
             var adj = new Dictionary<Vector3, List<(Vector3, float)>>();
+
             foreach (Vector3 node in graphNodes)
             {
                 adj[node] = new List<(Vector3, float)>();
+
                 foreach (Vector3 other in graphNodes)
                 {
                     if (node == other) continue;
+
                     float d = Vector3.Distance(node, other);
-                    if (d < 5f) adj[node].Add((other, d));
+                    if (d < 5f)
+                        adj[node].Add((other, d));
                 }
             }
+
             return adj;
         }
 
-        // --- FOOTSTEP RECEIVERS TO KEEP CONSOLE CLEAN ---
+        // --- FOOTSTEP EVENTS ---
         public void OnFootstep(AnimationEvent animationEvent) { }
         public void OnLand(AnimationEvent animationEvent) { }
     }
 }
-
