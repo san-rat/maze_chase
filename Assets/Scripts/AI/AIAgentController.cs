@@ -148,5 +148,47 @@ namespace MazeChase.AI
             }
             return adj;
         }
+                
+                // Called by DynamicGraphUpdater when graph changes
+        public IEnumerator RecalculatePath()
+        {
+            Debug.Log("AI: Recalculating path...");
+
+            // Small delay before recalculating
+            yield return new WaitForSeconds(0.5f);
+
+            if (graphNodes == null || graphNodes.Count == 0)
+            {
+                Debug.LogWarning("RecalculatePath: No graph nodes!");
+                yield break;
+            }
+
+            // Run UCS with updated adjacency
+            UCSSearch ucs = new UCSSearch();
+            currentResult = ucs.FindPath(
+                transform.position,
+                goalTransform.position,
+                graphNodes,
+                adjacency ?? BuildFallbackAdjacency()
+            );
+
+            if (debugVis != null)
+                debugVis.SetResults(
+                    currentResult, graphNodes, adjacency);
+
+            if (currentResult.pathFound)
+            {
+                waypointIndex = 0;
+                isMoving = true;
+                SetAnim(true);
+                MoveToNext();
+                Debug.Log("AI: New path found after recalculation!");
+            }
+            else
+            {
+                Debug.LogWarning(
+                    "AI: No path found after recalculation!");
+            }
+        }
     }
 }
