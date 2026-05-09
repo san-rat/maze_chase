@@ -3954,6 +3954,7 @@ GameObject:
   - component: {fileID: 303553320}
   - component: {fileID: 303553319}
   - component: {fileID: 303553318}
+  - component: {fileID: 303553322}
   m_Layer: 0
   m_Name: HalfWall_03
   m_TagString: Untagged
@@ -4081,6 +4082,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 303553316}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &303553322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 303553316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8a8b22bdec794a4e8fe5fce273d1219, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BarrierController
+  raisedHeight: 2.5
+  riseSpeed: 3
+  activationDistance: 3
+  isRaised: 0
 --- !u!1 &305731823
 GameObject:
   m_ObjectHideFlags: 0
@@ -6648,6 +6665,7 @@ GameObject:
   - component: {fileID: 474405519}
   - component: {fileID: 474405518}
   - component: {fileID: 474405517}
+  - component: {fileID: 474405521}
   m_Layer: 0
   m_Name: OverheadWall_01
   m_TagString: Untagged
@@ -6775,6 +6793,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 474405515}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &474405521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 474405515}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8a8b22bdec794a4e8fe5fce273d1219, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BarrierController
+  raisedHeight: 1.5
+  riseSpeed: 3
+  activationDistance: 3
+  isRaised: 0
 --- !u!1 &477423945
 GameObject:
   m_ObjectHideFlags: 0
@@ -9961,7 +9995,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8944336655422409503, guid: f6d148d888ffbf54b9afe9936dfaec1f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 8.124503
+      value: 7.7450624
       objectReference: {fileID: 0}
     - target: {fileID: 8944336655422409503, guid: f6d148d888ffbf54b9afe9936dfaec1f, type: 3}
       propertyPath: m_LocalPosition.y
@@ -9969,7 +10003,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8944336655422409503, guid: f6d148d888ffbf54b9afe9936dfaec1f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -846.7018
+      value: -846.6868
       objectReference: {fileID: 0}
     - target: {fileID: 8944336655422409503, guid: f6d148d888ffbf54b9afe9936dfaec1f, type: 3}
       propertyPath: m_LocalRotation.w
@@ -12116,6 +12150,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 292092770}
   m_LocalEulerAnglesHint: {x: 0, y: -89.458, z: 0}
+--- !u!1 &844658569 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4416926081852918481, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
+  m_PrefabInstance: {fileID: 1237003695}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &845666533
 GameObject:
   m_ObjectHideFlags: 0
@@ -12232,6 +12271,7 @@ GameObject:
   - component: {fileID: 860837668}
   - component: {fileID: 860837667}
   - component: {fileID: 860837666}
+  - component: {fileID: 860837670}
   m_Layer: 0
   m_Name: HalfWall_02
   m_TagString: Untagged
@@ -12359,6 +12399,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 860837664}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &860837670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 860837664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8a8b22bdec794a4e8fe5fce273d1219, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BarrierController
+  raisedHeight: 2.5
+  riseSpeed: 3
+  activationDistance: 3
+  isRaised: 0
 --- !u!1 &866909228
 GameObject:
   m_ObjectHideFlags: 0
@@ -12698,6 +12754,18 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3893294197879345259, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
   m_PrefabInstance: {fileID: 1237003695}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &904131643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 844658569}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34edea85508055c47a8ba64f4e0d9f89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCrouch
 --- !u!1 &906802313
 GameObject:
   m_ObjectHideFlags: 0
@@ -16980,7 +17048,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3893294197879345259, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
       insertIndex: -1
       addedObject: {fileID: 462473990}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4416926081852918481, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 904131643}
   m_SourcePrefab: {fileID: 100100000, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
 --- !u!1 &1237065410
 GameObject:
@@ -18882,6 +18953,7 @@ GameObject:
   - component: {fileID: 1380679242}
   - component: {fileID: 1380679241}
   - component: {fileID: 1380679245}
+  - component: {fileID: 1380679246}
   m_Layer: 0
   m_Name: 'HalfWall_01 '
   m_TagString: Untagged
@@ -19009,6 +19081,22 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
+--- !u!114 &1380679246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1380679240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8a8b22bdec794a4e8fe5fce273d1219, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BarrierController
+  raisedHeight: 2.5
+  riseSpeed: 3
+  activationDistance: 3
+  isRaised: 0
 --- !u!1 &1387974336
 GameObject:
   m_ObjectHideFlags: 0
