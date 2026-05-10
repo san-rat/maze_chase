@@ -4,23 +4,34 @@ namespace MazeChase.AI
 {
     public class AICameraFollow : MonoBehaviour
     {
-        public Transform target;        // AI_Racer_Robot
-        public Vector3 offset = new Vector3(0f, 3f, -6f);
-        public float smoothSpeed = 5f;
+        public Transform target;
+        public Vector3 offset = new Vector3(0f, 4f, -7f);
+        public float smoothSpeed = 8f;
+        public float rotationSpeed = 5f;
 
         void LateUpdate()
         {
             if (target == null) return;
 
-            // Follow position
+            // Calculate desired position behind and above AI
             Vector3 desiredPos = target.position +
-                                 target.TransformDirection(offset);
+                                 target.forward * offset.z +
+                                 Vector3.up * offset.y;
+
+            // Smooth position
             transform.position = Vector3.Lerp(
-                transform.position, desiredPos,
+                transform.position,
+                desiredPos,
                 smoothSpeed * Time.deltaTime);
 
-            // Look at AI
-            transform.LookAt(target.position + Vector3.up * 1.5f);
+            // Smooth rotation — look at AI slightly above ground
+            Quaternion desiredRot = Quaternion.LookRotation(
+                (target.position + Vector3.up * 1.5f) - transform.position);
+
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                desiredRot,
+                rotationSpeed * Time.deltaTime);
         }
     }
 }
