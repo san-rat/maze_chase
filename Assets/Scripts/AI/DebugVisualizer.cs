@@ -19,10 +19,38 @@ namespace MazeChase.AI
         private Dictionary<Vector3, List<(Vector3, float)>> adjacency;
 
         private List<GameObject> drawnObjects = new List<GameObject>();
-
-        // Cooldown to prevent rapid toggling
         private float tabCooldown = 0f;
         private bool dataReceived = false;
+
+        // Shared material cache — created once reused for all spheres
+        private Material blueMat;
+        private Material yellowMat;
+        private Material greenMat;
+
+        void Start()
+        {
+            // Create materials once at start
+            blueMat = CreateMaterial(nodeColor, false);
+            yellowMat = CreateMaterial(visitedColor, false);
+            greenMat = CreateMaterial(pathColor, true);
+        }
+
+        private Material CreateMaterial(Color color, bool emission)
+        {
+            Shader shader = Shader.Find("Universal Render Pipeline/Lit")
+                         ?? Shader.Find("Standard")
+                         ?? Shader.Find("Diffuse");
+
+            Material mat = new Material(shader);
+            mat.color = color;
+
+            if (emission)
+            {
+                mat.EnableKeyword("_EMISSION");
+                mat.SetColor("_EmissionColor", color * 0.5f);
+            }
+            return mat;
+        }
 
         void Update()
         {
@@ -41,7 +69,6 @@ namespace MazeChase.AI
                     debugMode = false;
                     return;
                 }
-
                 RefreshVisuals();
             }
         }
@@ -68,74 +95,53 @@ namespace MazeChase.AI
                 Destroy(obj);
             drawnObjects.Clear();
 
-            if (!debugMode) return;
-
-            if (!dataReceived)
-            {
-                Debug.LogWarning("DebugVisualizer: No data to show yet!");
-                return;
-            }
+            if (!debugMode || !dataReceived) return;
 
             Debug.Log($"DebugVisualizer: Drawing {allNodes.Count} nodes, " +
                       $"{visitedNodes.Count} visited, " +
                       $"{finalPath.Count} path points...");
 
-            // Step 1 — Blue — all graph nodes smallest
+            // Blue — all graph nodes smallest
             foreach (Vector3 pos in allNodes)
-                CreateSphere(pos, 0.2f, nodeColor, "GraphNode");
+                CreateSphere(pos, 0.2f, blueMat);
 
-            // Step 2 — Yellow — visited nodes medium
+            // Yellow — visited nodes medium
             foreach (Vector3 pos in visitedNodes)
-                CreateSphere(pos, 0.35f, visitedColor, "VisitedNode");
+                CreateSphere(pos, 0.35f, yellowMat);
 
-            // Step 3 — Green — final path largest
+            // Green — final path largest
             for (int i = 0; i < finalPath.Count; i++)
             {
-                CreateSphere(finalPath[i], 0.6f, pathColor, "PathNode");
+                CreateSphere(finalPath[i], 0.6f, greenMat);
                 if (i < finalPath.Count - 1)
-                    CreateLine(finalPath[i], finalPath[i + 1], pathColor, "PathLine");
+                    CreateLine(finalPath[i], finalPath[i + 1]);
             }
 
             Debug.Log("DebugVisualizer: Drawing complete!");
         }
 
-        private void CreateSphere(Vector3 pos, float radius, Color color, string label)
+        private void CreateSphere(Vector3 pos, float radius, Material mat)
         {
             GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            sphere.name = label;
             sphere.transform.position = pos;
             sphere.transform.localScale = Vector3.one * radius;
             sphere.transform.SetParent(this.transform);
-
             Destroy(sphere.GetComponent<Collider>());
 
             Renderer r = sphere.GetComponent<Renderer>();
-            if (r != null)
-            {
-                Material mat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-                mat.color = color;
-
-                if (label == "PathNode")
-                {
-                    mat.EnableKeyword("_EMISSION");
-                    mat.SetColor("_EmissionColor", color * 0.5f);
-                }
-
-                r.material = mat;
-            }
+            if (r != null) r.sharedMaterial = mat;
 
             drawnObjects.Add(sphere);
         }
 
-        private void CreateLine(Vector3 start, Vector3 end, Color color, string label)
+        private void CreateLine(Vector3 start, Vector3 end)
         {
-            GameObject lineObj = new GameObject(label);
+            GameObject lineObj = new GameObject("PathLine");
             lineObj.transform.SetParent(this.transform);
             LineRenderer lr = lineObj.AddComponent<LineRenderer>();
-            lr.material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-            lr.material.color = color;
-            lr.startColor = color;
-            lr.endColor = color;
+            lr.sharedMaterial = greenMat;
+            lr.startColor = pathColor;
+            lr.endColor = pathColor;
             lr.startWidth = 0.15f;
             lr.endWidth = 0.15f;
             lr.SetPosition(0, start);
@@ -147,6 +153,9 @@ namespace MazeChase.AI
         {
             foreach (GameObject obj in drawnObjects)
                 if (obj != null) Destroy(obj);
+            if (blueMat != null) Destroy(blueMat);
+            if (yellowMat != null) Destroy(yellowMat);
+            if (greenMat != null) Destroy(greenMat);
         }
 
         void OnDrawGizmos()
