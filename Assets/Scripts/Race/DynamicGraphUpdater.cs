@@ -6,6 +6,8 @@ namespace MazeChase.Race
 {
     public class DynamicGraphUpdater : MonoBehaviour
     {
+        private const float NodeMatchTolerance = 3f;
+
         // Singleton — access from anywhere
         public static DynamicGraphUpdater Instance;
 
@@ -42,30 +44,35 @@ namespace MazeChase.Race
                 return;
             }
 
+            if (!TryResolveGraphNode(posA, out Vector3 keyA) ||
+                !TryResolveGraphNode(posB, out Vector3 keyB))
+            {
+                Debug.LogWarning("Cannot block edge - barrier nodes do not match graph nodes.");
+                return;
+            }
+
             bool removed = false;
 
             // Remove posB from posA's neighbor list
-            if (aiAgent.adjacency.ContainsKey(posA))
+            if (aiAgent.adjacency.ContainsKey(keyA))
             {
-                aiAgent.adjacency[posA].RemoveAll(
-                    n => Vector3.Distance(n.Item1, posB) < 0.5f
-                );
-                removed = true;
+                removed |= aiAgent.adjacency[keyA].RemoveAll(
+                    n => Vector3.Distance(n.Item1, keyB) < NodeMatchTolerance
+                ) > 0;
             }
 
             // Remove posA from posB's neighbor list
-            if (aiAgent.adjacency.ContainsKey(posB))
+            if (aiAgent.adjacency.ContainsKey(keyB))
             {
-                aiAgent.adjacency[posB].RemoveAll(
-                    n => Vector3.Distance(n.Item1, posA) < 0.5f
-                );
-                removed = true;
+                removed |= aiAgent.adjacency[keyB].RemoveAll(
+                    n => Vector3.Distance(n.Item1, keyA) < NodeMatchTolerance
+                ) > 0;
             }
 
             if (removed)
             {
                 Debug.Log("IS: Edge blocked between " +
-                    posA + " and " + posB);
+                    keyA + " and " + keyB);
                 NotifyRecalculation();
             }
         }
@@ -76,22 +83,31 @@ namespace MazeChase.Race
             if (aiAgent == null || aiAgent.adjacency == null)
                 return;
 
-            float cost = Vector3.Distance(posA, posB);
+            if (!TryResolveGraphNode(posA, out Vector3 keyA) ||
+                !TryResolveGraphNode(posB, out Vector3 keyB))
+            {
+                Debug.LogWarning("Cannot restore edge - barrier nodes do not match graph nodes.");
+                return;
+            }
+
+            float cost = Vector3.Distance(keyA, keyB);
 
             // Add posB back to posA's neighbors
-            if (aiAgent.adjacency.ContainsKey(posA))
+            if (aiAgent.adjacency.ContainsKey(keyA) &&
+                !HasNeighbor(keyA, keyB))
             {
-                aiAgent.adjacency[posA].Add((posB, cost));
+                aiAgent.adjacency[keyA].Add((keyB, cost));
             }
 
             // Add posA back to posB's neighbors
-            if (aiAgent.adjacency.ContainsKey(posB))
+            if (aiAgent.adjacency.ContainsKey(keyB) &&
+                !HasNeighbor(keyB, keyA))
             {
-                aiAgent.adjacency[posB].Add((posA, cost));
+                aiAgent.adjacency[keyB].Add((keyA, cost));
             }
 
             Debug.Log("IS: Edge restored between " +
-                posA + " and " + posB);
+                keyA + " and " + keyB);
 
             NotifyRecalculation();
         }
@@ -110,6 +126,36 @@ namespace MazeChase.Race
             aiAgent.StartCoroutine(
                 aiAgent.RecalculatePath()
             );
+        }
+
+        private bool TryResolveGraphNode(Vector3 position, out Vector3 key)
+        {
+            key = default;
+
+            if (aiAgent?.adjacency == null)
+                return false;
+
+            float bestDistance = float.MaxValue;
+            foreach (Vector3 candidate in aiAgent.adjacency.Keys)
+            {
+                float distance = Vector3.Distance(position, candidate);
+                if (distance < bestDistance)
+                {
+                    bestDistance = distance;
+                    key = candidate;
+                }
+            }
+
+            return bestDistance <= NodeMatchTolerance;
+        }
+
+        private bool HasNeighbor(Vector3 from, Vector3 to)
+        {
+            if (!aiAgent.adjacency.TryGetValue(from, out var neighbors))
+                return false;
+
+            return neighbors.Exists(
+                n => Vector3.Distance(n.Item1, to) < NodeMatchTolerance);
         }
     }
 }
