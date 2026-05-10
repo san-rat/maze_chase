@@ -252,20 +252,6 @@ Press **Tab**
 
 ---
 
-## Submission Requirements
-
-### Graphics (SE3032)
-
-* ✅ Source code
-* ⬜ Demo video
-
-### Intelligent Systems (SE3062)
-
-* ✅ Git commits
-* ⬜ Viva
-
----
-
 ## Git Commit Convention
 
 ```
