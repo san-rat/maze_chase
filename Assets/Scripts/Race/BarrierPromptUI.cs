@@ -9,45 +9,42 @@ public class BarrierPromptUI : MonoBehaviour
     [Header("Settings")]
     public float detectionDistance = 3f;
 
-    // All barriers in the scene
     private BarrierController[] barriers;
-
-    // Reference to player
     private Transform player;
 
     void Start()
     {
-        // Find player
-        GameObject playerObj =
-            GameObject.FindWithTag("Player");
+        GameObject playerObj = GameObject.FindWithTag("Player");
         if (playerObj != null)
             player = playerObj.transform;
+        else
+            Debug.LogWarning("BarrierPromptUI: No object tagged Player found!");
 
-        // Find all barriers in scene
         barriers = FindObjectsOfType<BarrierController>();
 
-        // Hide prompt at start
-        promptText.gameObject.SetActive(false);
+        if (promptText != null)
+            promptText.gameObject.SetActive(false);
+        else
+            Debug.LogWarning("BarrierPromptUI: promptText not assigned!");
     }
 
     void Update()
     {
-        if (player == null) return;
+        // Null checks before doing anything
+        if (player == null || promptText == null || barriers == null) return;
 
         bool nearBarrier = false;
 
-        // Check each barrier
         foreach (BarrierController barrier in barriers)
         {
-            // Skip already activated barriers
+            // Skip null or already raised barriers
+            if (barrier == null) continue;
             if (barrier.isRaised) continue;
 
             float distance = Vector3.Distance(
                 player.position,
-                barrier.transform.position
-            );
+                barrier.transform.position);
 
-            // If close enough show prompt
             if (distance <= detectionDistance)
             {
                 nearBarrier = true;
@@ -55,7 +52,6 @@ public class BarrierPromptUI : MonoBehaviour
             }
         }
 
-        // Show or hide prompt
         promptText.gameObject.SetActive(nearBarrier);
     }
 }
