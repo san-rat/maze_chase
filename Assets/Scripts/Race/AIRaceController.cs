@@ -19,7 +19,7 @@ namespace MazeChase.Race
         [SerializeField] private float speedMultiplier = 1.15f;
 
         [Header("Algorithm Selection")]
-        [SerializeField] private bool useUCS = true;
+        [SerializeField] private int algorithmIndex = 0; // 0=UCS 1=BFS 2=AStar
 
         private NavMeshAgent agent;
         private RaceGameManager raceGameManager;
@@ -66,26 +66,33 @@ namespace MazeChase.Race
             agent.speed = agent.speed * speedMultiplier;
             agent.updateRotation = true;
             agent.updateUpAxis = false;
-            agent.isStopped = true; // Wait for algorithm selection
+            agent.isStopped = true;
 
             BuildGraphFromScene();
             StartCoroutine(WaitForAlgorithmSelection());
         }
 
-        // Called by AlgorithmSelectorUI
+        // Called by AlgorithmSelectorUI — bool version for UCS/BFS
         public void SetAlgorithm(bool ucs)
         {
-            useUCS = ucs;
+            algorithmIndex = ucs ? 0 : 1;
             algorithmSelected = true;
             Debug.Log($"AIRaceController: Algorithm set to {(ucs ? "UCS" : "BFS")}");
         }
 
-        // Called by AlgorithmSelectorUI to pause/unpause AI
+        // Called by AlgorithmSelectorUI — index version for all 3
+        public void SetAlgorithmIndex(int index)
+        {
+            algorithmIndex = index;
+            algorithmSelected = true;
+            string name = index == 0 ? "UCS" : index == 1 ? "BFS" : "A*";
+            Debug.Log($"AIRaceController: Algorithm set to {name}");
+        }
+
         public void PauseAI(bool pause)
         {
             isPaused = pause;
             agent.isStopped = pause;
-            Debug.Log($"AIRaceController: AI {(pause ? "paused" : "unpaused")}");
         }
 
         private void Update()
@@ -123,17 +130,11 @@ namespace MazeChase.Race
             }
         }
 
-        // Wait until player selects algorithm then start
         private IEnumerator WaitForAlgorithmSelection()
         {
             Debug.Log("AIRaceController: Waiting for algorithm selection...");
-
-            // Wait until algorithm is selected
             yield return new WaitUntil(() => algorithmSelected);
-
             Debug.Log("AIRaceController: Algorithm selected! Starting race...");
-
-            // Now run delayed start
             yield return StartCoroutine(DelayedStart());
         }
 
@@ -211,30 +212,37 @@ namespace MazeChase.Race
 
             if (graphNodes.Count > 0 && goal != null)
             {
-                if (useUCS)
+                // Run selected algorithm
+                if (algorithmIndex == 0)
                 {
                     UCSSearch ucs = new UCSSearch();
                     searchResult = ucs.FindPath(
-                        transform.position,
-                        goal.position,
-                        graphNodes,
-                        adjacency);
+                        transform.position, goal.position,
+                        graphNodes, adjacency);
                     Debug.Log("AIRaceController: Running UCS...");
                 }
-                else
+                else if (algorithmIndex == 1)
                 {
                     BFSSearch bfs = new BFSSearch();
                     searchResult = bfs.FindPath(
-                        transform.position,
-                        goal.position,
-                        graphNodes,
-                        adjacency);
+                        transform.position, goal.position,
+                        graphNodes, adjacency);
                     Debug.Log("AIRaceController: Running BFS...");
                 }
-
-                if (searchResult.pathFound)
+                else if (algorithmIndex == 2)
                 {
-                    Debug.Log($"AIRaceController: {(useUCS ? "UCS" : "BFS")} path found — " +
+                    AStarSearch astar = new AStarSearch();
+                    searchResult = astar.FindPath(
+                        transform.position, goal.position,
+                        graphNodes, adjacency);
+                    Debug.Log("AIRaceController: Running A*...");
+                }
+
+                if (searchResult != null && searchResult.pathFound)
+                {
+                    string algName = algorithmIndex == 0 ? "UCS" :
+                                     algorithmIndex == 1 ? "BFS" : "A*";
+                    Debug.Log($"AIRaceController: {algName} path found — " +
                               $"{searchResult.path.Count} waypoints, " +
                               $"cost {searchResult.totalCost:F1}, " +
                               $"{searchResult.expandedNodeCount} nodes expanded.");
@@ -249,7 +257,7 @@ namespace MazeChase.Race
                     yield break;
                 }
 
-                Debug.LogWarning($"AIRaceController: {(useUCS ? "UCS" : "BFS")} no path — NavMesh fallback.");
+                Debug.LogWarning("AIRaceController: No path found — NavMesh fallback.");
             }
 
             if (goal != null)
@@ -288,5 +296,8 @@ namespace MazeChase.Race
                 animator.SetBool("Jump", false);
             }
         }
+
+        public List<Vector3> GetGraphNodes() => graphNodes;
+        public Dictionary<Vector3, List<(Vector3, float)>> GetAdjacency() => adjacency;
     }
 }
