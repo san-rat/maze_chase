@@ -288,5 +288,16 @@ namespace MazeChase.Race
                 animator.SetBool("Jump", false);
             }
         }
+
+        // Public getters so other scripts can access the graph
+        public List<Vector3> GetGraphNodes()
+        {
+            return graphNodes;
+        }
+
+        public Dictionary<Vector3, List<(Vector3, float)>> GetAdjacency()
+        {
+            return adjacency;
+        }
     }
 }

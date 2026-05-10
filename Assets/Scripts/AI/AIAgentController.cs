@@ -40,6 +40,23 @@ namespace MazeChase.AI
         void Start()
         {
             agent.speed *= aiSpeedMultiplier;
+
+            // Get graph from AIRaceController
+            if (graphNodes == null || graphNodes.Count == 0)
+            {
+                AIRaceController rc = FindAnyObjectByType<AIRaceController>();
+                if (rc != null)
+                {
+                    graphNodes = rc.GetGraphNodes();
+                    adjacency = rc.GetAdjacency();
+                    Debug.Log($"AIAgentController: Got {graphNodes.Count} nodes from AIRaceController");
+                }
+                else
+                {
+                    Debug.LogWarning("AIAgentController: AIRaceController not found!");
+                }
+            }
+
             StartCoroutine(DelayedStart());
         }
 

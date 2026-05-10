@@ -20,12 +20,28 @@ namespace MazeChase.AI
 
         private List<GameObject> drawnObjects = new List<GameObject>();
 
+        // Cooldown to prevent rapid toggling
+        private float tabCooldown = 0f;
+        private bool dataReceived = false;
+
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Tab))
+            tabCooldown -= Time.deltaTime;
+
+            if (Input.GetKeyDown(KeyCode.Tab) && tabCooldown <= 0f)
             {
+                tabCooldown = 0.5f;
                 debugMode = !debugMode;
                 Debug.Log($"Debug visualizer: {(debugMode ? "ON" : "OFF")}");
+
+                if (debugMode && !dataReceived)
+                {
+                    Debug.LogWarning("DebugVisualizer: No path data yet — " +
+                                     "wait for AI to find path first!");
+                    debugMode = false;
+                    return;
+                }
+
                 RefreshVisuals();
             }
         }
@@ -38,38 +54,49 @@ namespace MazeChase.AI
             finalPath = result.path ?? new List<Vector3>();
             allNodes = nodes ?? new List<Vector3>();
             adjacency = adj;
+            dataReceived = true;
+
             Debug.Log($"DebugVisualizer: received {finalPath.Count} path points, " +
-                      $"{visitedNodes.Count} visited nodes.");
+                      $"{visitedNodes.Count} visited nodes. Press Tab to visualize.");
+
             if (debugMode) RefreshVisuals();
         }
 
         private void RefreshVisuals()
         {
-            // Clear old objects
             foreach (GameObject obj in drawnObjects)
                 Destroy(obj);
             drawnObjects.Clear();
 
             if (!debugMode) return;
 
-            // Step 1 — Draw all graph nodes SMALLEST — blue
-            // These show the complete search space
+            if (!dataReceived)
+            {
+                Debug.LogWarning("DebugVisualizer: No data to show yet!");
+                return;
+            }
+
+            Debug.Log($"DebugVisualizer: Drawing {allNodes.Count} nodes, " +
+                      $"{visitedNodes.Count} visited, " +
+                      $"{finalPath.Count} path points...");
+
+            // Step 1 — Blue — all graph nodes smallest
             foreach (Vector3 pos in allNodes)
                 CreateSphere(pos, 0.2f, nodeColor, "GraphNode");
 
-            // Step 2 — Draw visited nodes MEDIUM — yellow
-            // These show where UCS/BFS searched
+            // Step 2 — Yellow — visited nodes medium
             foreach (Vector3 pos in visitedNodes)
                 CreateSphere(pos, 0.35f, visitedColor, "VisitedNode");
 
-            // Step 3 — Draw final path LARGEST — green
-            // These show the actual path AI followed
+            // Step 3 — Green — final path largest
             for (int i = 0; i < finalPath.Count; i++)
             {
                 CreateSphere(finalPath[i], 0.6f, pathColor, "PathNode");
                 if (i < finalPath.Count - 1)
                     CreateLine(finalPath[i], finalPath[i + 1], pathColor, "PathLine");
             }
+
+            Debug.Log("DebugVisualizer: Drawing complete!");
         }
 
         private void CreateSphere(Vector3 pos, float radius, Color color, string label)
@@ -88,7 +115,6 @@ namespace MazeChase.AI
                 Material mat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
                 mat.color = color;
 
-                // Make path nodes emit light so they're visible
                 if (label == "PathNode")
                 {
                     mat.EnableKeyword("_EMISSION");
@@ -127,17 +153,14 @@ namespace MazeChase.AI
         {
             if (!debugMode) return;
 
-            // Blue — all nodes
             Gizmos.color = nodeColor;
             foreach (Vector3 v in allNodes)
                 Gizmos.DrawSphere(v, 0.2f);
 
-            // Yellow — visited
             Gizmos.color = visitedColor;
             foreach (Vector3 v in visitedNodes)
                 Gizmos.DrawSphere(v, 0.35f);
 
-            // Green — path
             Gizmos.color = pathColor;
             for (int i = 0; i < finalPath.Count - 1; i++)
                 Gizmos.DrawLine(finalPath[i], finalPath[i + 1]);
