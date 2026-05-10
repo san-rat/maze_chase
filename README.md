@@ -33,7 +33,7 @@ The human player navigates the maze manually using keyboard controls, while the 
 
    * Press **1** → UCS
    * Press **2** → BFS
-   * Press **3 (if added)** → A*
+   * Press **3** → A*
 4. Race through the maze to reach the red goal checkpoint
 5. Beat the AI to win
 
@@ -45,7 +45,7 @@ The human player navigates the maze manually using keyboard controls, while the 
 | ------------- | ---------------------------------------------------------- | --------------------------- |
 | **Student 1** | World Builder — Level Design, Lighting, Texturing, NavMesh | Graph Formulation           |
 | **Student 2** | Systems Engineer — Player Interaction Physics              | Dynamic Adaptation & Events |
-| **Student 3** | Core Developer — 3D Modeling (Blender/Maya)                | A* Search & Heuristic       |
+| **Student 3** | Core Developer — 3D Modeling (Blender     )                | A* Search & Heuristic       |
 | **Student 4** | Agent Controller — AI Movement & Animation                 | UCS, BFS & Debug Visualizer |
 
 ---
@@ -82,7 +82,7 @@ git clone https://github.com/san-rat/maze_chase.git
 | **Mouse**        | Look around             |
 | **1**            | UCS                     |
 | **2**            | BFS                     |
-| **3**            | A* (if enabled)         |
+| **3**            | A*                      |
 | **Tab**          | Toggle debug visualizer |
 | **C**            | Switch camera           |
 | **V**            | Bird’s eye view         |
@@ -105,7 +105,7 @@ maze_chase/
 │   │   ├── AI/     — Pathfinding and debug scripts
 │   │   │   ├── UCSSearch.cs
 │   │   │   ├── BFSSearch.cs
-│   │   │   ├── AStarSearch.cs   ← NEW
+│   │   │   ├── AStarSearch.cs   
 │   │   │   ├── SearchResult.cs
 │   │   │   ├── DebugVisualizer.cs
 │   │   │   ├── RaceCameraSwitcher.cs
