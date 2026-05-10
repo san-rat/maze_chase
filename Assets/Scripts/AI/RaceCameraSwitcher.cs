@@ -4,67 +4,58 @@ namespace MazeChase.AI
 {
     public class RaceCameraSwitcher : MonoBehaviour
     {
-        private GameObject playerCamera;
-        private GameObject aiCamera;
+        private GameObject playerFollowCam;
+        private GameObject aiFollowCam;
         private GameObject topDownCamera;
         private bool isTopDown = false;
+        private bool followingAI = false;
 
         void Start()
         {
-            playerCamera = GameObject.Find("PlayerFollowCamera");
-            aiCamera = GameObject.Find("AIFollowCamera");
+            playerFollowCam = GameObject.Find("PlayerFollowCamera");
+            aiFollowCam = GameObject.Find("AIFollowCamera");
             topDownCamera = GameObject.Find("TopDownCamera");
 
-            if (playerCamera == null) Debug.LogWarning("PlayerFollowCamera not found!");
-            if (aiCamera == null) Debug.LogWarning("AIFollowCamera not found!");
-            if (topDownCamera == null) Debug.LogWarning("TopDownCamera not found!");
-
-            // Start with player camera
-            if (playerCamera != null) playerCamera.SetActive(true);
-            if (aiCamera != null) aiCamera.SetActive(false);
+            // Disable AI camera at start
+            if (aiFollowCam != null) aiFollowCam.SetActive(false);
             if (topDownCamera != null) topDownCamera.SetActive(false);
 
-            Debug.Log("C = AI camera | V = birds eye view | Scroll = zoom | Tab = debug nodes");
+            Debug.Log("C = AI | V = birds eye | Tab = debug");
         }
 
         void Update()
         {
-            // C — switch between player and AI camera
             if (Input.GetKeyDown(KeyCode.C))
             {
-                if (isTopDown) return; // don't switch while in top down
+                if (isTopDown) return;
+                followingAI = !followingAI;
 
-                bool playerActive = playerCamera != null && playerCamera.activeSelf;
-                if (playerCamera != null) playerCamera.SetActive(!playerActive);
-                if (aiCamera != null) aiCamera.SetActive(playerActive);
+                if (playerFollowCam != null) playerFollowCam.SetActive(!followingAI);
+                if (aiFollowCam != null) aiFollowCam.SetActive(followingAI);
 
-                Debug.Log(playerActive ? "Camera: AI" : "Camera: Player");
+                Debug.Log(followingAI ? "Camera: AI" : "Camera: Player");
             }
 
-            // V — toggle birds eye top down view
             if (Input.GetKeyDown(KeyCode.V))
             {
                 isTopDown = !isTopDown;
 
                 if (isTopDown)
                 {
-                    // Switch to top down
-                    if (playerCamera != null) playerCamera.SetActive(false);
-                    if (aiCamera != null) aiCamera.SetActive(false);
+                    if (playerFollowCam != null) playerFollowCam.SetActive(false);
+                    if (aiFollowCam != null) aiFollowCam.SetActive(false);
                     if (topDownCamera != null) topDownCamera.SetActive(true);
-                    Debug.Log("Birds eye view ON — scroll to zoom");
+                    Debug.Log("Birds eye ON");
                 }
                 else
                 {
-                    // Switch back to player
-                    if (playerCamera != null) playerCamera.SetActive(true);
-                    if (aiCamera != null) aiCamera.SetActive(false);
                     if (topDownCamera != null) topDownCamera.SetActive(false);
-                    Debug.Log("Birds eye view OFF");
+                    if (playerFollowCam != null) playerFollowCam.SetActive(!followingAI);
+                    if (aiFollowCam != null) aiFollowCam.SetActive(followingAI);
+                    Debug.Log("Birds eye OFF");
                 }
             }
 
-            // Scroll wheel — zoom in top down view
             if (isTopDown && topDownCamera != null)
             {
                 Camera cam = topDownCamera.GetComponent<Camera>();
