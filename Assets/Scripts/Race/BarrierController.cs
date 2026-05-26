@@ -69,14 +69,14 @@ public class BarrierController : MonoBehaviour
     public void ActivateBarrier()
     {
         if (isActivated) return;
-
         isActivated = true;
         isRaised = true;
-
-        // Move barrier up by raisedHeight
         targetPosition = startPosition +
             new Vector3(0, raisedHeight, 0);
+        Debug.Log("Barrier raised: " + gameObject.name);
 
-        Debug.Log("Barrier activated: " + gameObject.name);
+        // ADD THIS LINE:
+        if (CameraShake.Instance != null)
+            CameraShake.Instance.Shake(0.3f, 0.2f);
     }
 }
