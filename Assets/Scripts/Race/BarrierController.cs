@@ -3,80 +3,132 @@ using UnityEngine;
 public class BarrierController : MonoBehaviour
 {
     [Header("Barrier Settings")]
-    // How high the barrier rises when activated
-    public float raisedHeight = 2.5f;
-
-    // How fast the barrier rises
+    public float raisedHeight = 1.2f;
     public float riseSpeed = 3f;
-
-    // How close player must be to activate
     public float activationDistance = 3f;
 
-    [Header("State")]
-    // Is barrier currently raised?
+    [Header("Glow Settings")]
+    public Color normalColor = Color.grey;
+    public Color glowColor = Color.red;
+
+    // Is wall currently raised?
     public bool isRaised = false;
 
-    // Has this barrier been used already?
-    private bool isActivated = false;
-
-    // Starting position of barrier
-    private Vector3 startPosition;
-
-    // Target position barrier moves toward
+    // Target position wall moves toward
+    private Vector3 loweredPosition;
+    private Vector3 raisedPosition;
     private Vector3 targetPosition;
 
-    // Reference to the player
+    // Player reference
     private Transform player;
+
+    // Renderer for glow effect
+    private Renderer wallRenderer;
+    private bool isGlowing = false;
+
+    // Cooldown to prevent spam pressing
+    private float toggleCooldown = 0f;
 
     void Start()
     {
-        // Save starting position
-        startPosition = transform.position;
-        targetPosition = startPosition;
+        // Save both positions
+        loweredPosition = transform.position;
+        raisedPosition = loweredPosition +
+            new Vector3(0, raisedHeight, 0);
+        targetPosition = loweredPosition;
 
-        // Find the player by tag
-        GameObject playerObj = GameObject.FindWithTag("Player");
+        // Get renderer for glow
+        wallRenderer = GetComponent<Renderer>();
+        if (wallRenderer != null)
+            wallRenderer.material.color = normalColor;
+
+        // Find player
+        GameObject playerObj =
+            GameObject.FindWithTag("Player");
         if (playerObj != null)
             player = playerObj.transform;
     }
 
     void Update()
     {
-        // Smoothly move barrier toward target
+        // Smooth movement toward target
         transform.position = Vector3.MoveTowards(
             transform.position,
             targetPosition,
             riseSpeed * Time.deltaTime
         );
 
-        // Check if player is close enough
-        if (player != null && !isActivated)
-        {
-            float distance = Vector3.Distance(
-                transform.position,
-                player.position
-            );
+        // Count down cooldown
+        if (toggleCooldown > 0)
+            toggleCooldown -= Time.deltaTime;
 
-            // If player is close and presses E
-            if (distance <= activationDistance &&
-                Input.GetKeyDown(KeyCode.E))
-            {
-                ActivateBarrier();
-            }
+        if (player == null) return;
+
+        float distance = Vector3.Distance(
+            transform.position, player.position);
+
+        // Glow red when player is close
+        if (distance <= activationDistance && !isGlowing)
+        {
+            isGlowing = true;
+            if (wallRenderer != null)
+                wallRenderer.material.color = glowColor;
+        }
+        else if (distance > activationDistance
+            && isGlowing)
+        {
+            isGlowing = false;
+            if (wallRenderer != null)
+                wallRenderer.material.color = normalColor;
+        }
+
+        // Toggle on E press when close enough
+        if (distance <= activationDistance &&
+            Input.GetKeyDown(KeyCode.E) &&
+            toggleCooldown <= 0)
+        {
+            ToggleBarrier();
         }
     }
 
+    public void ToggleBarrier()
+    {
+        // Add cooldown to prevent spam
+        toggleCooldown = 0.5f;
+
+        isRaised = !isRaised;
+
+        if (isRaised)
+        {
+            // Rise up
+            targetPosition = raisedPosition;
+            Debug.Log("Barrier raised: " +
+                gameObject.name);
+
+            // Camera shake
+            if (CameraShake.Instance != null)
+                CameraShake.Instance.Shake(0.3f, 0.2f);
+
+            // Update barrier count UI
+            if (BarrierCountUI.Instance != null)
+                BarrierCountUI.Instance.BarrierUsed();
+        }
+        else
+        {
+            // Come back down
+            targetPosition = loweredPosition;
+            Debug.Log("Barrier lowered: " +
+                gameObject.name);
+
+            // Update barrier count UI back up
+            if (BarrierCountUI.Instance != null)
+                BarrierCountUI.Instance.BarrierRestored();
+        }
+    }
+
+    // Rename old function to match new system
     public void ActivateBarrier()
     {
-        if (isActivated) return;
-        isActivated = true;
-        isRaised = true;
-        targetPosition = startPosition +
-            new Vector3(0, raisedHeight, 0);
-        Debug.Log("Barrier raised: " + gameObject.name);
-
-        // ADD THIS LINE:
-        if (CameraShake.Instance != null)
-            CameraShake.Instance.Shake(0.3f, 0.2f);
+        ToggleBarrier();
     }
 }

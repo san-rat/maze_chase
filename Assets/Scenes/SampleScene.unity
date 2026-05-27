@@ -21497,8 +21497,8 @@ Transform:
   m_GameObject: {fileID: 303553316}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -32.6, y: -0.8, z: -908.2}
-  m_LocalScale: {x: 4.2, y: 1.5, z: 1}
+  m_LocalPosition: {x: -32.6, y: -2.5416, z: -908.2}
+  m_LocalScale: {x: 4.2, y: 1.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 635282812}
@@ -21621,7 +21621,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8a8b22bdec794a4e8fe5fce273d1219, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BarrierController
-  raisedHeight: 2.5
+  raisedHeight: 1.2
   riseSpeed: 3
   activationDistance: 3
   isRaised: 0
@@ -33157,7 +33157,7 @@ GameObject:
   - component: {fileID: 474405522}
   - component: {fileID: 474405523}
   m_Layer: 7
-  m_Name: OverheadWall_01
+  m_Name: HalfWall_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -33171,14 +33171,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 474405515}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -12.98, y: -0.1, z: -891.2}
-  m_LocalScale: {x: 4.15, y: 1.2, z: 0.4}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -39.67, y: -2.422, z: -937.192}
+  m_LocalScale: {x: 4.5, y: 1.2, z: 0.4}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 433023370}
   m_Father: {fileID: 1889931544}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!54 &474405517
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -33296,7 +33296,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8a8b22bdec794a4e8fe5fce273d1219, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BarrierController
-  raisedHeight: 1.5
+  raisedHeight: 1.2
   riseSpeed: 3
   activationDistance: 3
   isRaised: 0
@@ -47068,7 +47068,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8284830525373602833, guid: f6d148d888ffbf54b9afe9936dfaec1f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1041891514}
   m_SourcePrefab: {fileID: 100100000, guid: f6d148d888ffbf54b9afe9936dfaec1f, type: 3}
 --- !u!1 &688304458
 GameObject:
@@ -58522,23 +58525,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 885703936}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &885938929 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2070925442191277755, guid: a1a802ecaf6775746bb2a929fb554ad8, type: 3}
-  m_PrefabInstance: {fileID: 1240276351}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &885938934
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 885938929}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 42cca8d3c86580645925e1c12f95e800, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CameraShake
 --- !u!1 &886064927
 GameObject:
   m_ObjectHideFlags: 0
@@ -69152,6 +69138,23 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!1 &1041891507 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8284830525373602833, guid: f6d148d888ffbf54b9afe9936dfaec1f, type: 3}
+  m_PrefabInstance: {fileID: 687252044}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1041891514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1041891507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42cca8d3c86580645925e1c12f95e800, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraShake
 --- !u!1 &1046522412
 GameObject:
   m_ObjectHideFlags: 0
@@ -81763,10 +81766,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2070925442191277755, guid: a1a802ecaf6775746bb2a929fb554ad8, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 885938934}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a1a802ecaf6775746bb2a929fb554ad8, type: 3}
 --- !u!1 &1242553593
 GameObject:
@@ -90376,7 +90376,6 @@ GameObject:
   - component: {fileID: 1380679243}
   - component: {fileID: 1380679242}
   - component: {fileID: 1380679241}
-  - component: {fileID: 1380679245}
   - component: {fileID: 1380679246}
   - component: {fileID: 1380679247}
   - component: {fileID: 1380679248}
@@ -90474,40 +90473,13 @@ Transform:
   m_GameObject: {fileID: 1380679240}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -12.96, y: -1.19, z: -880.9208}
+  m_LocalPosition: {x: -12.96, y: -2.5416, z: -880.9208}
   m_LocalScale: {x: 4.15, y: 1.2, z: 0.4}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 345904100}
   m_Father: {fileID: 1889931544}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &1380679245
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1380679240}
-  serializedVersion: 5
-  m_Mass: 999
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 126
-  m_CollisionDetection: 0
 --- !u!114 &1380679246
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -90520,7 +90492,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8a8b22bdec794a4e8fe5fce273d1219, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BarrierController
-  raisedHeight: 2.5
+  raisedHeight: 1.2
   riseSpeed: 3
   activationDistance: 3
   isRaised: 0
@@ -107948,7 +107920,7 @@ Transform:
   m_GameObject: {fileID: 1587556492}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 10.7657, y: -0.6392, z: -2.4581}
+  m_LocalPosition: {x: 10.83, y: -0.88, z: -2.4581}
   m_LocalScale: {x: 114.43396, y: 1, z: 128.01347}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -119816,7 +119788,7 @@ Transform:
   m_GameObject: {fileID: 1783716499}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -34.14709, y: 1.5, z: -907.5534}
+  m_LocalPosition: {x: -33.02, y: 1.26, z: -907.5534}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []

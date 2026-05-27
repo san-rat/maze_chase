@@ -3,19 +3,13 @@ using UnityEngine;
 
 public class CameraShake : MonoBehaviour
 {
-    // Singleton
     public static CameraShake Instance;
-
-    // Original camera position
-    private Vector3 originalPosition;
 
     void Awake()
     {
         Instance = this;
-        originalPosition = transform.localPosition;
     }
 
-    // Call this to shake the camera
     public void Shake(float duration, float magnitude)
     {
         StopAllCoroutines();
@@ -28,20 +22,24 @@ public class CameraShake : MonoBehaviour
 
         while (elapsed < duration)
         {
-            // Random offset using Perlin noise
-            float x = (Mathf.PerlinNoise(
-                Time.time * 10f, 0f) - 0.5f) * magnitude;
-            float y = (Mathf.PerlinNoise(
-                0f, Time.time * 10f) - 0.5f) * magnitude;
+            // Apply shake directly to camera
+            float x = Random.Range(
+                -magnitude, magnitude);
+            float y = Random.Range(
+                -magnitude, magnitude);
 
-            transform.localPosition = originalPosition +
+            // Apply as world position offset
+            Camera.main.transform.localPosition +=
                 new Vector3(x, y, 0);
 
             elapsed += Time.deltaTime;
-            yield return null;
-        }
 
-        // Return to original position
-        transform.localPosition = originalPosition;
+            // Wait one frame
+            yield return new WaitForEndOfFrame();
+
+            // Reset position each frame
+            Camera.main.transform.localPosition -=
+                new Vector3(x, y, 0);
+        }
     }
 }
