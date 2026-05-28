@@ -29,6 +29,10 @@ public class BarrierController : MonoBehaviour
     // Cooldown to prevent spam pressing
     private float toggleCooldown = 0f;
 
+    [Header("Audio")]
+    public AudioClip activationSound;
+    private AudioSource audioSource;
+
     void Start()
     {
         // Save both positions
@@ -47,6 +51,10 @@ public class BarrierController : MonoBehaviour
             GameObject.FindWithTag("Player");
         if (playerObj != null)
             player = playerObj.transform;
+
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
     }
 
     void Update()
@@ -93,6 +101,10 @@ public class BarrierController : MonoBehaviour
 
     public void ToggleBarrier()
     {
+        // Play sound on toggle
+        if (activationSound != null)
+            audioSource.PlayOneShot(activationSound);
+
         // Add cooldown to prevent spam
         toggleCooldown = 0.5f;
 
