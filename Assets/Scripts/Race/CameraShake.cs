@@ -19,27 +19,24 @@ public class CameraShake : MonoBehaviour
     IEnumerator DoShake(float duration, float magnitude)
     {
         float elapsed = 0f;
+        float originalY = transform.localPosition.y;
 
         while (elapsed < duration)
         {
-            // Apply shake directly to camera
             float x = Random.Range(
                 -magnitude, magnitude);
             float y = Random.Range(
                 -magnitude, magnitude);
 
-            // Apply as world position offset
-            Camera.main.transform.localPosition +=
+            transform.localPosition += 
                 new Vector3(x, y, 0);
 
             elapsed += Time.deltaTime;
-
-            // Wait one frame
             yield return new WaitForEndOfFrame();
 
-            // Reset position each frame
-            Camera.main.transform.localPosition -=
-                new Vector3(x, y, 0);
+            // Reset each frame
+            transform.localPosition = new Vector3(
+                0, originalY, 0);
         }
     }
 }
