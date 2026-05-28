@@ -29,6 +29,12 @@ public class PauseManager : MonoBehaviour
         {
             TogglePause();
         }
+
+        // Press R to restart
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            RestartLevel();
+        }
     }
 
     public void TogglePause()
@@ -43,5 +49,19 @@ public class PauseManager : MonoBehaviour
 
         Debug.Log(isPaused ? "Game Paused" :
             "Game Resumed");
+    }
+
+    public void RestartLevel()
+    {
+        // Reset time scale first
+        Time.timeScale = 1f;
+
+        // Reload current scene
+        UnityEngine.SceneManagement.SceneManager
+            .LoadScene(
+            UnityEngine.SceneManagement
+            .SceneManager.GetActiveScene().name);
+
+        Debug.Log("Level restarted!");
     }
 }
