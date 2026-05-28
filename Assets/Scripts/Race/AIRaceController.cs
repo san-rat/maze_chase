@@ -86,7 +86,7 @@ namespace MazeChase.Race
             algorithmIndex = index;
             algorithmSelected = true;
             string name = index == 0 ? "UCS" : index == 1 ? "BFS" : "A*";
-            Debug.Log($"AIRaceController: Algorithm set to {name}");
+            Debug.Log($"=== SetAlgorithmIndex CALLED: {name} ===");
         }
 
         public void PauseAI(bool pause)
@@ -132,9 +132,9 @@ namespace MazeChase.Race
 
         private IEnumerator WaitForAlgorithmSelection()
         {
-            Debug.Log("AIRaceController: Waiting for algorithm selection...");
+            Debug.Log("=== WaitForAlgorithmSelection STARTED ===");
             yield return new WaitUntil(() => algorithmSelected);
-            Debug.Log("AIRaceController: Algorithm selected! Starting race...");
+            Debug.Log("=== Algorithm Selected! Moving to DelayedStart ===");
             yield return StartCoroutine(DelayedStart());
         }
 
@@ -198,6 +198,10 @@ namespace MazeChase.Race
 
         private IEnumerator DelayedStart()
         {
+            // Start race timer
+            if (RaceTimer.Instance != null)
+                RaceTimer.Instance.StartTimer();
+
             if (animator != null)
             {
                 animator.SetFloat("Speed", 0f);

@@ -81,7 +81,7 @@ public class BarrierPromptUI : MonoBehaviour
                 {
                     // Very close — red and bigger
                     promptText.color = veryNearColor;
-                    promptText.fontSize = 30;
+                    promptText.fontSize = 28;
                     promptText.text =
                         ">>> Press E to Toggle Barrier <<<";
                 }
