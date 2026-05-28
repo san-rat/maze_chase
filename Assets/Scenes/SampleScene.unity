@@ -60002,6 +60002,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34edea85508055c47a8ba64f4e0d9f89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCrouch
+--- !u!114 &904131650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 844658569}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 817dff7a2880889409998f9c764a282c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerKnockback
+  knockbackForce: 5
+  knockbackDuration: 0.2
 --- !u!1 &905119795
 GameObject:
   m_ObjectHideFlags: 0
@@ -81659,6 +81673,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4416926081852918481, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
       insertIndex: -1
       addedObject: {fileID: 904131643}
+    - targetCorrespondingSourceObject: {fileID: 4416926081852918481, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 904131650}
   m_SourcePrefab: {fileID: 100100000, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
 --- !u!1 &1237065410
 GameObject:
