@@ -1,4 +1,5 @@
 using UnityEngine;
+using MazeChase.Race;
 
 public class BarrierController : MonoBehaviour
 {
@@ -11,22 +12,15 @@ public class BarrierController : MonoBehaviour
     public Color normalColor = Color.grey;
     public Color glowColor = Color.red;
 
-    // Is wall currently raised?
     public bool isRaised = false;
 
-    // Target position wall moves toward
     private Vector3 loweredPosition;
     private Vector3 raisedPosition;
     private Vector3 targetPosition;
 
-    // Player reference
     private Transform player;
-
-    // Renderer for glow effect
     private Renderer wallRenderer;
     private bool isGlowing = false;
-
-    // Cooldown to prevent spam pressing
     private float toggleCooldown = 0f;
 
     [Header("Audio")]
@@ -35,18 +29,17 @@ public class BarrierController : MonoBehaviour
 
     void Start()
     {
-        // Save both positions
+        Debug.Log("BarrierCountUI at Start: " + BarrierCountUI.Instance);
+
         loweredPosition = transform.position;
         raisedPosition = loweredPosition +
             new Vector3(0, raisedHeight, 0);
         targetPosition = loweredPosition;
 
-        // Get renderer for glow
         wallRenderer = GetComponent<Renderer>();
         if (wallRenderer != null)
             wallRenderer.material.color = normalColor;
 
-        // Find player
         GameObject playerObj =
             GameObject.FindWithTag("Player");
         if (playerObj != null)
@@ -59,14 +52,12 @@ public class BarrierController : MonoBehaviour
 
     void Update()
     {
-        // Smooth movement toward target
         transform.position = Vector3.Lerp(
             transform.position,
             targetPosition,
             riseSpeed * Time.deltaTime
         );
 
-        // Count down cooldown
         if (toggleCooldown > 0)
             toggleCooldown -= Time.deltaTime;
 
@@ -75,22 +66,19 @@ public class BarrierController : MonoBehaviour
         float distance = Vector3.Distance(
             transform.position, player.position);
 
-        // Glow red when player is close
         if (distance <= activationDistance && !isGlowing)
         {
             isGlowing = true;
             if (wallRenderer != null)
                 wallRenderer.material.color = glowColor;
         }
-        else if (distance > activationDistance
-            && isGlowing)
+        else if (distance > activationDistance && isGlowing)
         {
             isGlowing = false;
             if (wallRenderer != null)
                 wallRenderer.material.color = normalColor;
         }
 
-        // Toggle on E press when close enough
         if (distance <= activationDistance &&
             Input.GetKeyDown(KeyCode.E) &&
             toggleCooldown <= 0)
@@ -101,44 +89,34 @@ public class BarrierController : MonoBehaviour
 
     public void ToggleBarrier()
     {
-        // Play sound on toggle
         if (activationSound != null)
             audioSource.PlayOneShot(activationSound);
 
-        // Add cooldown to prevent spam
         toggleCooldown = 0.5f;
-
         isRaised = !isRaised;
 
         if (isRaised)
         {
-            // Rise up
             targetPosition = raisedPosition;
-            Debug.Log("Barrier raised: " +
-                gameObject.name);
+            Debug.Log("Barrier raised: " + gameObject.name);
 
-            // Camera shake
             if (CameraShake.Instance != null)
                 CameraShake.Instance.Shake(0.3f, 0.2f);
 
-            // Update barrier count UI
             if (BarrierCountUI.Instance != null)
                 BarrierCountUI.Instance.BarrierUsed();
         }
         else
         {
-            // Come back down
             targetPosition = loweredPosition;
-            Debug.Log("Barrier lowered: " +
-                gameObject.name);
+            Debug.Log("Barrier lowered: " + gameObject.name);
 
-            // Update barrier count UI back up
             if (BarrierCountUI.Instance != null)
                 BarrierCountUI.Instance.BarrierRestored();
         }
+        Debug.Log("BarrierCountUI check: " + BarrierCountUI.Instance);
     }
 
-    // Rename old function to match new system
     public void ActivateBarrier()
     {
         ToggleBarrier();

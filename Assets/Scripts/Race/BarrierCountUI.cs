@@ -1,46 +1,48 @@
 using UnityEngine;
 using TMPro;
 
-public class BarrierCountUI : MonoBehaviour
+namespace MazeChase.Race
 {
-    public TextMeshProUGUI countText;
-
-    private int totalBarriers = 4;
-    private int remainingBarriers = 4;
-
-    public static BarrierCountUI Instance;
-
-    void Awake()
+    public class BarrierCountUI : MonoBehaviour
     {
-        Instance = this;
-    }
+        public TextMeshProUGUI countText;
 
-    void Start()
-    {
-        UpdateUI();
-    }
+        private int totalBarriers = 4;
+        private int remainingBarriers = 4;
 
-    public void BarrierUsed()
-    {
-        remainingBarriers--;
-        if (remainingBarriers < 0)
-            remainingBarriers = 0;
-        UpdateUI();
-    }
+        public static BarrierCountUI Instance;
 
-    public void BarrierRestored()
-    {
-        remainingBarriers++;
-        if (remainingBarriers > totalBarriers)
-            remainingBarriers = totalBarriers;
-        UpdateUI();
-    }
+        void Awake()
+        {
+            Instance = this;
+        }
 
-    void UpdateUI()
-    {
-        if (countText != null)
-            countText.text =
-                "Barriers: " + remainingBarriers +
-                "/" + totalBarriers;
+        void Start()
+        {
+            UpdateUI();
+        }
+
+        public void BarrierUsed()
+        {
+            remainingBarriers--;
+            if (remainingBarriers < 0)
+                remainingBarriers = 0;
+            UpdateUI();
+        }
+
+        public void BarrierRestored()
+        {
+            remainingBarriers++;
+            if (remainingBarriers > totalBarriers)
+                remainingBarriers = totalBarriers;
+            UpdateUI();
+        }
+
+        void UpdateUI()
+        {
+            if (countText != null)
+                countText.text = "Barriers: " +
+                    remainingBarriers + "/" + totalBarriers;
+        }
     }
 }
