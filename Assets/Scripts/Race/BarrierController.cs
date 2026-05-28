@@ -52,7 +52,7 @@ public class BarrierController : MonoBehaviour
     void Update()
     {
         // Smooth movement toward target
-        transform.position = Vector3.MoveTowards(
+        transform.position = Vector3.Lerp(
             transform.position,
             targetPosition,
             riseSpeed * Time.deltaTime
