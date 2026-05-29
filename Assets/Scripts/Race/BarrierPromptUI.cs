@@ -83,7 +83,7 @@ public class BarrierPromptUI : MonoBehaviour
                     promptText.color = veryNearColor;
                     promptText.fontSize = 28;
                     promptText.text =
-                        ">>> Press E to Toggle Barrier <<<";
+                        "Press E to Toggle Barrier";
                 }
                 else
                 {
@@ -91,7 +91,7 @@ public class BarrierPromptUI : MonoBehaviour
                     promptText.color = nearColor;
                     promptText.fontSize = 24;
                     promptText.text =
-                        "Press E to Toggle Barrier";
+                        "Press Space to Jump Barrier";
                 }
             }
         }
