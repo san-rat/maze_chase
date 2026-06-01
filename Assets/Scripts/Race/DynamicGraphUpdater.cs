@@ -113,8 +113,8 @@ namespace MazeChase.Race
             aiAgent.StopAllCoroutines();
             aiAgent.StartCoroutine(aiAgent.RecalculatePath());
 
-            if (recalculatingUI != null)
-                StartCoroutine(ShowRecalculatingMessage());
+            // if (recalculatingUI != null)
+            //     StartCoroutine(ShowRecalculatingMessage());
         }
 
         IEnumerator ShowRecalculatingMessage()

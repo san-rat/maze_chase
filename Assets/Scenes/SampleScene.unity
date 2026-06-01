@@ -21982,12 +21982,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BarrierController
   raisedHeight: 1.2
-  riseSpeed: 3
+  riseSpeed: 4
   activationDistance: 3
   normalColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   glowColor: {r: 1, g: 0, b: 0, a: 1}
   isRaised: 0
   activationSound: {fileID: 8300000, guid: cb8ae2f52de4d214683a368d355c9da7, type: 3}
+  activationVolume: 2
 --- !u!114 &303553323
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28228,12 +28229,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BarrierController
   raisedHeight: 1.2
-  riseSpeed: 3
+  riseSpeed: 4
   activationDistance: 3
   normalColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   glowColor: {r: 1, g: 0, b: 0, a: 1}
   isRaised: 0
   activationSound: {fileID: 8300000, guid: cb8ae2f52de4d214683a368d355c9da7, type: 3}
+  activationVolume: 2
 --- !u!54 &387613862
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -34141,12 +34143,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BarrierController
   raisedHeight: 1.2
-  riseSpeed: 3
+  riseSpeed: 4
   activationDistance: 3
   normalColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   glowColor: {r: 1, g: 0, b: 0, a: 1}
   isRaised: 0
   activationSound: {fileID: 8300000, guid: cb8ae2f52de4d214683a368d355c9da7, type: 3}
+  activationVolume: 2
 --- !u!114 &474405522
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -91950,12 +91953,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BarrierController
   raisedHeight: 1.2
-  riseSpeed: 3
+  riseSpeed: 4
   activationDistance: 3
   normalColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   glowColor: {r: 1, g: 0, b: 0, a: 1}
   isRaised: 0
   activationSound: {fileID: 8300000, guid: cb8ae2f52de4d214683a368d355c9da7, type: 3}
+  activationVolume: 2
 --- !u!114 &1380679247
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -122187,6 +122191,7 @@ MonoBehaviour:
   glowColorA: {r: 1, g: 0.8, b: 0, a: 1}
   glowColorB: {r: 1, g: 0.4, b: 0, a: 1}
   pulseSpeed: 2
+  collectSound: {fileID: 8300000, guid: e46a05e2b1162834d83c5f2e0bdb09ef, type: 3}
 --- !u!1 &1784435765
 GameObject:
   m_ObjectHideFlags: 0
@@ -136820,7 +136825,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Press E to Activate Barrier
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -144830,7 +144835,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ' AI Recalculating Path...'
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
