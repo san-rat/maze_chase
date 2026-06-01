@@ -136997,6 +136997,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MazeChase.Race.GameManager
   countdownText: {fileID: 1117158222}
+  beepSound: {fileID: 8300000, guid: b76113524fdf2b847b2f4933ae296b19, type: 3}
+  goBeepSound: {fileID: 0}
   winLosePanel: {fileID: 1623375812}
   winLoseText: {fileID: 1502857484}
   finalTimeText: {fileID: 1200651665}
@@ -137030,9 +137032,11 @@ MonoBehaviour:
   track1: {fileID: 8300000, guid: d777c58229c8fb94186fb041f29f6137, type: 3}
   track2: {fileID: 8300000, guid: 57d4c2e6592ea9545adc9624fcdae6ac, type: 3}
   track3: {fileID: 8300000, guid: d0c340caec4759e4cb5795ec39359928, type: 3}
-  track1Volume: 0.14
-  track2Volume: 0.16
-  track3Volume: 0.26
+  track1Volume: 0.05
+  track2Volume: 0.1
+  track3Volume: 0.25
+  track3Delay: 3
+  track3FadeIn: 4
 --- !u!1 &1960492279
 GameObject:
   m_ObjectHideFlags: 0
