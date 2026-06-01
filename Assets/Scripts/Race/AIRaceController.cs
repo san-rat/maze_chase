@@ -285,9 +285,15 @@ namespace MazeChase.Race
             agent.isStopped = true;
             SetAnim(false);
             Debug.Log("AIRaceController: AI reached the goal!");
+
+            // ADD THIS:
+            FinishLineTrigger ft = FindAnyObjectByType<FinishLineTrigger>();
+            if (ft != null)
+                ft.AIWinsDirectCall();
+
             RaceParticipant rp = GetComponent<RaceParticipant>();
             if (rp != null) raceGameManager?.RegisterFinish(rp);
-        }
+}
 
         private void SetAnim(bool moving)
         {
