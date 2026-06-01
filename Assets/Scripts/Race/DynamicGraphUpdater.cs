@@ -92,11 +92,24 @@ namespace MazeChase.Race
             NotifyRecalculation();
         }
 
+        private float lastNotifyTime = -10f;
+
         public void NotifyRecalculation()
         {
-            Debug.Log("IS: Path recalculation triggered!");
-            if (aiAgent == null) return;
+            // Only show message every 5 seconds
+            if (Time.time - lastNotifyTime < 5f) 
+            {
+                // Still recalculate but don't show UI
+                if (aiAgent == null) return;
+                aiAgent.StopAllCoroutines();
+                aiAgent.StartCoroutine(aiAgent.RecalculatePath());
+                return;
+            }
 
+            lastNotifyTime = Time.time;
+            Debug.Log("IS: Path recalculation triggered!");
+
+            if (aiAgent == null) return;
             aiAgent.StopAllCoroutines();
             aiAgent.StartCoroutine(aiAgent.RecalculatePath());
 
@@ -107,7 +120,7 @@ namespace MazeChase.Race
         IEnumerator ShowRecalculatingMessage()
         {
             recalculatingUI.SetActive(true);
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(0.5f);
             recalculatingUI.SetActive(false);
         }
 

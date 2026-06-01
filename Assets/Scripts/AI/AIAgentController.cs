@@ -218,5 +218,23 @@ namespace MazeChase.AI
         // --- FOOTSTEP EVENTS ---
         public void OnFootstep(AnimationEvent animationEvent) { }
         public void OnLand(AnimationEvent animationEvent) { }
+
+        public void SetBackNodes(int nodeCount)
+        {
+            if (currentResult == null || !currentResult.pathFound)
+            {
+                Debug.LogWarning("No path to set back!");
+                return;
+            }
+
+            waypointIndex -= nodeCount;
+            if (waypointIndex < 0)
+                waypointIndex = 0;
+
+            Debug.Log($"AI set back to waypoint {waypointIndex}");
+            isMoving = true;
+            agent.isStopped = false;
+            MoveToNext();
+        }
     }
 }

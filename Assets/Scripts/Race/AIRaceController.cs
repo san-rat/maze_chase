@@ -307,6 +307,24 @@ namespace MazeChase.Race
             }
         }
 
+        // Called by PowerOrb — sends AI back 10 waypoints
+        public void SetBackNodes(int nodeCount)
+        {
+            if (searchResult == null || !searchResult.pathFound)
+            {
+                Debug.LogWarning("No path to set back!");
+                return;
+            }
+
+            waypointIndex -= nodeCount;
+            if (waypointIndex < 0)
+                waypointIndex = 0;
+
+            Debug.Log($"AI set back to waypoint {waypointIndex}");
+            isMoving = true;
+            agent.isStopped = false;
+            MoveToWaypoint();  // ← AIRaceController uses MoveToWaypoint
+        }
         public List<Vector3> GetGraphNodes() => graphNodes;
         public Dictionary<Vector3, List<(Vector3, float)>> GetAdjacency() => adjacency;
     }

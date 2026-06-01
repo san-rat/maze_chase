@@ -93,7 +93,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 20201, guid: 0000000000000000f000000000000000, type: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: 177f3b5a294d7574ebf8ac713128e1a8, type: 2}
   m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
@@ -121526,6 +121526,7 @@ GameObject:
   - component: {fileID: 1783716502}
   - component: {fileID: 1783716501}
   - component: {fileID: 1783716500}
+  - component: {fileID: 1783716504}
   m_Layer: 0
   m_Name: PowerOrb
   m_TagString: Untagged
@@ -121548,7 +121549,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -121579,7 +121580,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: c0fc629685ec9ea4687c680526d0af6e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -121620,12 +121621,31 @@ Transform:
   m_GameObject: {fileID: 1783716499}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -33.02, y: 1.26, z: -907.5534}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalPosition: {x: -32.6, y: -0.53, z: -905.6}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1783716504
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1783716499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ea7cb83815896e4f91f5cd4ec629206, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PowerOrb
+  floatSpeed: 1.5
+  floatHeight: 0.3
+  rotateSpeed: 90
+  orbRenderer: {fileID: 1783716501}
+  glowColorA: {r: 1, g: 0.8, b: 0, a: 1}
+  glowColorB: {r: 1, g: 0.4, b: 0, a: 1}
+  pulseSpeed: 2
 --- !u!1 &1784435765
 GameObject:
   m_ObjectHideFlags: 0
