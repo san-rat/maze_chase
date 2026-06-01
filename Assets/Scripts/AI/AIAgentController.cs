@@ -180,10 +180,17 @@ namespace MazeChase.AI
             SetAnim(false);
             Debug.Log("AI reached the goal!");
 
+            FinishLineTrigger finishLine =
+                FindAnyObjectByType<FinishLineTrigger>();
+            if (finishLine != null)
+                finishLine.AIWinsDirectCall();
+
             RaceGameManager gm = FindAnyObjectByType<RaceGameManager>();
             if (gm != null)
             {
-                RaceParticipant rp = GetComponent<RaceParticipant>();
+                RaceParticipant rp =
+                    GetComponent<RaceParticipant>() ??
+                    GetComponentInParent<RaceParticipant>();
                 if (rp != null) gm.RegisterFinish(rp);
             }
         }
