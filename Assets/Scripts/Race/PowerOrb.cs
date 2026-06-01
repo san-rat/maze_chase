@@ -1,6 +1,6 @@
 using UnityEngine;
 using MazeChase.Race;
-using MazeChase.AI; 
+using MazeChase.AI;
 
 public class PowerOrb : MonoBehaviour
 {
@@ -17,6 +17,10 @@ public class PowerOrb : MonoBehaviour
     public Color glowColorB = new Color(1f, 0.4f, 0f);
     public float pulseSpeed = 2f;
 
+    [Header("Sound")]
+    public AudioClip collectSound;
+    private AudioSource audioSource;
+
     private float startY;
     private bool isGrabbed = false;
     private Transform player;
@@ -24,6 +28,11 @@ public class PowerOrb : MonoBehaviour
     void Start()
     {
         startY = transform.position.y;
+
+        // Get or add AudioSource
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
 
         GameObject playerObj =
             GameObject.FindWithTag("Player");
@@ -54,12 +63,13 @@ public class PowerOrb : MonoBehaviour
         {
             float t = (Mathf.Sin(
                 Time.time * pulseSpeed) + 1f) / 2f;
-            Color glow = Color.Lerp(glowColorA, glowColorB, t);
-            orbRenderer.material.SetColor("_EmissionColor", glow);
+            Color glow = Color.Lerp(
+                glowColorA, glowColorB, t);
+            orbRenderer.material.SetColor(
+                "_EmissionColor", glow);
         }
     }
 
-    // Triggered when player walks into orb
     void OnTriggerEnter(Collider other)
     {
         if (isGrabbed) return;
@@ -69,9 +79,7 @@ public class PowerOrb : MonoBehaviour
                         other.name.Contains("Armature");
 
         if (isPlayer)
-        {
             GrabOrb();
-        }
     }
 
     void GrabOrb()
@@ -79,8 +87,14 @@ public class PowerOrb : MonoBehaviour
         isGrabbed = true;
         Debug.Log("=== PowerOrb GRABBED ===");
 
-        MazeChase.AI.AIAgentController aiAgent =
-            FindAnyObjectByType<MazeChase.AI.AIAgentController>();
+        // Play collect sound at orb position
+        if (collectSound != null)
+            AudioSource.PlayClipAtPoint(
+                collectSound, transform.position, 2.5f);
+
+        // Set AI back 10 nodes
+        AIAgentController aiAgent =
+            FindAnyObjectByType<AIAgentController>();
 
         if (aiAgent != null)
         {
@@ -92,6 +106,7 @@ public class PowerOrb : MonoBehaviour
             Debug.LogError("AIAgentController NOT FOUND!");
         }
 
+        // Hide orb
         gameObject.SetActive(false);
     }
 }

@@ -25,12 +25,11 @@ public class BarrierController : MonoBehaviour
 
     [Header("Audio")]
     public AudioClip activationSound;
+    [Range(0f, 2f)] public float activationVolume = 2f;
     private AudioSource audioSource;
 
     void Start()
     {
-        Debug.Log("BarrierCountUI at Start: " + BarrierCountUI.Instance);
-
         loweredPosition = transform.position;
         raisedPosition = loweredPosition +
             new Vector3(0, raisedHeight, 0);
@@ -48,6 +47,8 @@ public class BarrierController : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
             audioSource = gameObject.AddComponent<AudioSource>();
+
+        audioSource.volume = activationVolume;
     }
 
     void Update()
@@ -90,7 +91,8 @@ public class BarrierController : MonoBehaviour
     public void ToggleBarrier()
     {
         if (activationSound != null)
-            audioSource.PlayOneShot(activationSound);
+            audioSource.PlayOneShot(
+                activationSound, activationVolume);
 
         toggleCooldown = 0.5f;
         isRaised = !isRaised;
@@ -114,7 +116,6 @@ public class BarrierController : MonoBehaviour
             if (BarrierCountUI.Instance != null)
                 BarrierCountUI.Instance.BarrierRestored();
         }
-        Debug.Log("BarrierCountUI check: " + BarrierCountUI.Instance);
     }
 
     public void ActivateBarrier()
