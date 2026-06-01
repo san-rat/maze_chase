@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using MazeChase.AI;
@@ -6,12 +7,12 @@ namespace MazeChase.Race
 {
     public class DynamicGraphUpdater : MonoBehaviour
     {
+        [Header("UI Reference")]
+        public GameObject recalculatingUI;  // ← MOVED INSIDE class
+
         private const float NodeMatchTolerance = 3f;
 
-        // Singleton — access from anywhere
         public static DynamicGraphUpdater Instance;
-
-        // Reference to AI agent controller
         private AIAgentController aiAgent;
 
         void Awake()
@@ -21,26 +22,19 @@ namespace MazeChase.Race
 
         void Start()
         {
-            // Find the AI agent in the scene
             aiAgent = FindAnyObjectByType<AIAgentController>();
 
             if (aiAgent == null)
-                Debug.LogWarning(
-                    "DynamicGraphUpdater: " +
-                    "AIAgentController not found!");
+                Debug.LogWarning("DynamicGraphUpdater: AIAgentController not found!");
             else
-                Debug.Log(
-                    "DynamicGraphUpdater: " +
-                    "Connected to AIAgentController!");
+                Debug.Log("DynamicGraphUpdater: Connected to AIAgentController!");
         }
 
-        // Block edge between two world positions
         public void BlockEdge(Vector3 posA, Vector3 posB)
         {
             if (aiAgent == null || aiAgent.adjacency == null)
             {
-                Debug.LogWarning("Cannot block edge — " +
-                    "no adjacency data found!");
+                Debug.LogWarning("Cannot block edge — no adjacency data found!");
                 return;
             }
 
@@ -53,7 +47,6 @@ namespace MazeChase.Race
 
             bool removed = false;
 
-            // Remove posB from posA's neighbor list
             if (aiAgent.adjacency.ContainsKey(keyA))
             {
                 removed |= aiAgent.adjacency[keyA].RemoveAll(
@@ -61,7 +54,6 @@ namespace MazeChase.Race
                 ) > 0;
             }
 
-            // Remove posA from posB's neighbor list
             if (aiAgent.adjacency.ContainsKey(keyB))
             {
                 removed |= aiAgent.adjacency[keyB].RemoveAll(
@@ -71,13 +63,11 @@ namespace MazeChase.Race
 
             if (removed)
             {
-                Debug.Log("IS: Edge blocked between " +
-                    keyA + " and " + keyB);
+                Debug.Log("IS: Edge blocked between " + keyA + " and " + keyB);
                 NotifyRecalculation();
             }
         }
 
-        // Restore edge between two world positions
         public void UnblockEdge(Vector3 posA, Vector3 posB)
         {
             if (aiAgent == null || aiAgent.adjacency == null)
@@ -92,48 +82,52 @@ namespace MazeChase.Race
 
             float cost = Vector3.Distance(keyA, keyB);
 
-            // Add posB back to posA's neighbors
-            if (aiAgent.adjacency.ContainsKey(keyA) &&
-                !HasNeighbor(keyA, keyB))
-            {
+            if (aiAgent.adjacency.ContainsKey(keyA) && !HasNeighbor(keyA, keyB))
                 aiAgent.adjacency[keyA].Add((keyB, cost));
-            }
 
-            // Add posA back to posB's neighbors
-            if (aiAgent.adjacency.ContainsKey(keyB) &&
-                !HasNeighbor(keyB, keyA))
-            {
+            if (aiAgent.adjacency.ContainsKey(keyB) && !HasNeighbor(keyB, keyA))
                 aiAgent.adjacency[keyB].Add((keyA, cost));
-            }
 
-            Debug.Log("IS: Edge restored between " +
-                keyA + " and " + keyB);
-
+            Debug.Log("IS: Edge restored between " + keyA + " and " + keyB);
             NotifyRecalculation();
         }
 
-        // Tell AI to recalculate its path
+        private float lastNotifyTime = -10f;
+
         public void NotifyRecalculation()
         {
+            // Only show message every 5 seconds
+            if (Time.time - lastNotifyTime < 5f) 
+            {
+                // Still recalculate but don't show UI
+                if (aiAgent == null) return;
+                aiAgent.StopAllCoroutines();
+                aiAgent.StartCoroutine(aiAgent.RecalculatePath());
+                return;
+            }
+
+            lastNotifyTime = Time.time;
             Debug.Log("IS: Path recalculation triggered!");
 
             if (aiAgent == null) return;
-
-            // Stop current movement
             aiAgent.StopAllCoroutines();
+            aiAgent.StartCoroutine(aiAgent.RecalculatePath());
 
-            // Restart pathfinding with updated graph
-            aiAgent.StartCoroutine(
-                aiAgent.RecalculatePath()
-            );
+            // if (recalculatingUI != null)
+            //     StartCoroutine(ShowRecalculatingMessage());
+        }
+
+        IEnumerator ShowRecalculatingMessage()
+        {
+            recalculatingUI.SetActive(true);
+            yield return new WaitForSeconds(0.5f);
+            recalculatingUI.SetActive(false);
         }
 
         private bool TryResolveGraphNode(Vector3 position, out Vector3 key)
         {
             key = default;
-
-            if (aiAgent?.adjacency == null)
-                return false;
+            if (aiAgent?.adjacency == null) return false;
 
             float bestDistance = float.MaxValue;
             foreach (Vector3 candidate in aiAgent.adjacency.Keys)

@@ -1,45 +1,48 @@
 using UnityEngine;
+using TMPro;
 using MazeChase.Race;
 
 public class WinLoseTrigger : MonoBehaviour
 {
+    [Header("UI")]
+    public GameObject winLosePanel;
+    public TextMeshProUGUI winLoseText;
+
     private bool gameEnded = false;
 
     void OnTriggerEnter(Collider other)
     {
+        Debug.Log("=== TRIGGER ENTER: " + other.name + " tag: " + other.tag);
         if (gameEnded) return;
 
-        if (other.CompareTag("Player"))
+        bool isPlayer = other.CompareTag("Player") ||
+                        other.name.Contains("Player");
+        bool isAI = other.CompareTag("AI") ||
+                    other.name.Contains("AI_Racer") ||
+                    other.name.Contains("Robot");
+
+        if (isPlayer)
         {
             gameEnded = true;
             Debug.Log("PLAYER WINS!");
-
-            // Connect to existing RaceGameManager
-            RaceGameManager gm =
-                FindAnyObjectByType<RaceGameManager>();
-            if (gm != null)
-            {
-                RaceParticipant rp =
-                    other.GetComponent<RaceParticipant>();
-                if (rp != null)
-                    gm.RegisterFinish(rp);
-            }
+            if (GameManager.Instance != null)
+                GameManager.Instance.ShowResult(true);
+            else
+                Debug.LogError("GameManager.Instance is NULL!");
         }
-        else if (other.CompareTag("AI") ||
-                 other.name.Contains("AI_Racer"))
+        else if (isAI)
         {
             gameEnded = true;
             Debug.Log("AI WINS!");
-
-            RaceGameManager gm =
-                FindAnyObjectByType<RaceGameManager>();
-            if (gm != null)
-            {
-                RaceParticipant rp =
-                    other.GetComponent<RaceParticipant>();
-                if (rp != null)
-                    gm.RegisterFinish(rp);
-            }
+            if (GameManager.Instance != null)
+                GameManager.Instance.ShowResult(false);
+            else
+                Debug.LogError("GameManager.Instance is NULL!");
         }
+    }
+
+    void OnCollisionEnter(Collision other)
+    {
+        Debug.Log("=== COLLISION ENTER: " + other.gameObject.name);
     }
 }

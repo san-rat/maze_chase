@@ -86,7 +86,7 @@ namespace MazeChase.Race
             algorithmIndex = index;
             algorithmSelected = true;
             string name = index == 0 ? "UCS" : index == 1 ? "BFS" : "A*";
-            Debug.Log($"AIRaceController: Algorithm set to {name}");
+            Debug.Log($"=== SetAlgorithmIndex CALLED: {name} ===");
         }
 
         public void PauseAI(bool pause)
@@ -132,9 +132,9 @@ namespace MazeChase.Race
 
         private IEnumerator WaitForAlgorithmSelection()
         {
-            Debug.Log("AIRaceController: Waiting for algorithm selection...");
+            Debug.Log("=== WaitForAlgorithmSelection STARTED ===");
             yield return new WaitUntil(() => algorithmSelected);
-            Debug.Log("AIRaceController: Algorithm selected! Starting race...");
+            Debug.Log("=== Algorithm Selected! Moving to DelayedStart ===");
             yield return StartCoroutine(DelayedStart());
         }
 
@@ -198,6 +198,10 @@ namespace MazeChase.Race
 
         private IEnumerator DelayedStart()
         {
+            // Start race timer
+            if (RaceTimer.Instance != null)
+                RaceTimer.Instance.StartTimer();
+
             if (animator != null)
             {
                 animator.SetFloat("Speed", 0f);
@@ -281,9 +285,15 @@ namespace MazeChase.Race
             agent.isStopped = true;
             SetAnim(false);
             Debug.Log("AIRaceController: AI reached the goal!");
+
+            // ADD THIS:
+            FinishLineTrigger ft = FindAnyObjectByType<FinishLineTrigger>();
+            if (ft != null)
+                ft.AIWinsDirectCall();
+
             RaceParticipant rp = GetComponent<RaceParticipant>();
             if (rp != null) raceGameManager?.RegisterFinish(rp);
-        }
+}
 
         private void SetAnim(bool moving)
         {
@@ -297,6 +307,24 @@ namespace MazeChase.Race
             }
         }
 
+        // Called by PowerOrb — sends AI back 10 waypoints
+        public void SetBackNodes(int nodeCount)
+        {
+            if (searchResult == null || !searchResult.pathFound)
+            {
+                Debug.LogWarning("No path to set back!");
+                return;
+            }
+
+            waypointIndex -= nodeCount;
+            if (waypointIndex < 0)
+                waypointIndex = 0;
+
+            Debug.Log($"AI set back to waypoint {waypointIndex}");
+            isMoving = true;
+            agent.isStopped = false;
+            MoveToWaypoint();  // ← AIRaceController uses MoveToWaypoint
+        }
         public List<Vector3> GetGraphNodes() => graphNodes;
         public Dictionary<Vector3, List<(Vector3, float)>> GetAdjacency() => adjacency;
     }

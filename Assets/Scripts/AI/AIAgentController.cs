@@ -65,6 +65,13 @@ namespace MazeChase.AI
         {
             currentAlgorithmIndex = index;
             Debug.Log($"AI: Algorithm {index} selected. Recalculating path...");
+
+            // START TIMER HERE
+            if (RaceTimer.Instance != null)
+                RaceTimer.Instance.StartTimer();
+            else
+                Debug.LogError("RaceTimer.Instance is NULL in SetAlgorithm!");
+
             StartCoroutine(RecalculatePath());
         }
 
@@ -123,6 +130,11 @@ namespace MazeChase.AI
         {
             SetAnim(false);
             yield return new WaitForSeconds(aiDelay);
+
+            // START TIMER HERE TOO (backup)
+            if (RaceTimer.Instance != null)
+                RaceTimer.Instance.StartTimer();
+
             Debug.Log("AI ready. Select algorithm to start.");
         }
 
@@ -206,5 +218,23 @@ namespace MazeChase.AI
         // --- FOOTSTEP EVENTS ---
         public void OnFootstep(AnimationEvent animationEvent) { }
         public void OnLand(AnimationEvent animationEvent) { }
+
+        public void SetBackNodes(int nodeCount)
+        {
+            if (currentResult == null || !currentResult.pathFound)
+            {
+                Debug.LogWarning("No path to set back!");
+                return;
+            }
+
+            waypointIndex -= nodeCount;
+            if (waypointIndex < 0)
+                waypointIndex = 0;
+
+            Debug.Log($"AI set back to waypoint {waypointIndex}");
+            isMoving = true;
+            agent.isStopped = false;
+            MoveToNext();
+        }
     }
 }

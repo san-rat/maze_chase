@@ -1,5 +1,6 @@
 using UnityEngine;
 using MazeChase.Race;
+using MazeChase.AI;
 
 public class PowerOrb : MonoBehaviour
 {
@@ -7,71 +8,105 @@ public class PowerOrb : MonoBehaviour
     public float floatSpeed = 1.5f;
     public float floatHeight = 0.3f;
 
-    [Header("Grab Settings")]
-    public float grabDistance = 2f;
+    [Header("Rotation")]
+    public float rotateSpeed = 90f;
 
-    // Starting Y position
+    [Header("Pulse Glow")]
+    public Renderer orbRenderer;
+    public Color glowColorA = new Color(1f, 0.8f, 0f);
+    public Color glowColorB = new Color(1f, 0.4f, 0f);
+    public float pulseSpeed = 2f;
+
+    [Header("Sound")]
+    public AudioClip collectSound;
+    private AudioSource audioSource;
+
     private float startY;
-
-    // Has orb been grabbed?
     private bool isGrabbed = false;
-
-    // Player reference
     private Transform player;
 
     void Start()
     {
         startY = transform.position.y;
 
+        // Get or add AudioSource
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
+
         GameObject playerObj =
             GameObject.FindWithTag("Player");
         if (playerObj != null)
             player = playerObj.transform;
+
+        if (orbRenderer == null)
+            orbRenderer = GetComponent<Renderer>();
     }
 
     void Update()
     {
         if (isGrabbed) return;
 
-        // Float up and down smoothly
+        // Float up and down
         float newY = startY + Mathf.Sin(
             Time.time * floatSpeed) * floatHeight;
         transform.position = new Vector3(
             transform.position.x,
             newY,
-            transform.position.z
-        );
+            transform.position.z);
 
-        // Rotate slowly for visual effect
-        transform.Rotate(0, 50f * Time.deltaTime, 0);
+        // Rotate
+        transform.Rotate(0, rotateSpeed * Time.deltaTime, 0);
 
-        // Check player distance and E key
-        if (player != null)
+        // Pulse glow
+        if (orbRenderer != null)
         {
-            float distance = Vector3.Distance(
-                transform.position,
-                player.position
-            );
-
-            if (distance <= grabDistance &&
-                Input.GetKeyDown(KeyCode.E))
-            {
-                GrabOrb();
-            }
+            float t = (Mathf.Sin(
+                Time.time * pulseSpeed) + 1f) / 2f;
+            Color glow = Color.Lerp(
+                glowColorA, glowColorB, t);
+            orbRenderer.material.SetColor(
+                "_EmissionColor", glow);
         }
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (isGrabbed) return;
+
+        bool isPlayer = other.CompareTag("Player") ||
+                        other.name.Contains("Player") ||
+                        other.name.Contains("Armature");
+
+        if (isPlayer)
+            GrabOrb();
     }
 
     void GrabOrb()
     {
         isGrabbed = true;
-        Debug.Log("PowerOrb grabbed! AI recalculating!");
+        Debug.Log("=== PowerOrb GRABBED ===");
 
-        // Trigger AI recalculation
-        if (DynamicGraphUpdater.Instance != null)
-            DynamicGraphUpdater.Instance
-                .NotifyRecalculation();
+        // Play collect sound at orb position
+        if (collectSound != null)
+            AudioSource.PlayClipAtPoint(
+                collectSound, transform.position, 2.5f);
 
-        // Hide the orb
+        // Set AI back 10 nodes
+        AIAgentController aiAgent =
+            FindAnyObjectByType<AIAgentController>();
+
+        if (aiAgent != null)
+        {
+            Debug.Log("Calling SetBackNodes...");
+            aiAgent.SetBackNodes(10);
+        }
+        else
+        {
+            Debug.LogError("AIAgentController NOT FOUND!");
+        }
+
+        // Hide orb
         gameObject.SetActive(false);
     }
 }
